@@ -1,43 +1,34 @@
-import customtkinter as ctk
 from PIL import Image, ImageTk
+import customtkinter as ctk
 from fenetre import Fenetre
 
-class Inscription(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+def clear_entry(event, entry):
+    entry.delete(0, "end")
 
-        self.title("Discord IML - Nouvelle Inscription")
-        self.geometry("1280x720")  # Définir la taille de la fenêtre ici
+def create_gui():
+    fenetre = Fenetre() # Créer une instance de Fenetre, qui initialise la fenêtre
 
-        # Charger l'image de fond et l'ajuster à la fenêtre si nécessaire
-        self.load_background_image("images/page2.png")
+    # Charger l'image de fond
+    image = Image.open("images/page2.png")
+    # Redimensionner l'image
+    image = image.resize((1280, 720), Image.LANCZOS)
+    # Convertir l'image PIL en image Tkinter
+    bg_image = ImageTk.PhotoImage(image)
 
-    def load_background_image(self, filepath):
-        # Utiliser PIL pour ouvrir l'image
-        background_image = Image.open(filepath)
-        
-        # Adapter l'image à la taille de la fenêtre si nécessaire
-        background_image = background_image.resize((1280, 720), Image.Resampling.LANCZOS)
+    # Créer un label pour afficher l'image de fond sur fenetre.app
+    bg_label = ctk.CTkLabel(fenetre.app, image=bg_image)
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-        # Convertir l'image PIL en ImageTk
-        background_photo = ImageTk.PhotoImage(background_image)
+    # Créer les champs de saisie pour l'identifiant et le mot de passe sur fenetre.app
+    identifiant_entry = ctk.CTkEntry(fenetre.app, width=250, placeholder_text="Identifiant")
+    identifiant_entry.place(x=640, y=390, anchor='center')
 
-        # Créer un CTkLabel pour l'image de fond
-        label = ctk.CTkLabel(self, image=background_photo)
-        label.place(x=0, y=0, width=1280, height=720)
+    mot_de_passe_entry = ctk.CTkEntry(fenetre.app, width=250, show='*')
+    mot_de_passe_entry.insert(0, "Mot de passe")
+    mot_de_passe_entry.bind("<FocusIn>", lambda event: clear_entry(event, mot_de_passe_entry))
+    mot_de_passe_entry.place(x=640, y=450, anchor='center')
 
-        # Garder une référence à l'image pour éviter le ramassage de l'image par le garbage collector
-        self.background_image = background_photo
+    fenetre.app.mainloop()  # Lancer la boucle principale de l'application
 
-        # Ajouter d'autres widgets par-dessus l'image de fond ici
-        # Par exemple, un bouton :
-        button = ctk.CTkButton(self, text="Nom", command=self.on_button_click)
-        button.place(x=10, y=10)
-
-    def on_button_click(self):
-        print("Le bouton a été cliqué")
-
-# Créer et lancer l'inscription
 if __name__ == "__main__":
-    app = Inscription()
-    app.mainloop()
+    create_gui()
