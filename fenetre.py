@@ -8,6 +8,5 @@ class Fenetre:
         self.app.geometry("1280x720")
         self.app.iconbitmap('images/discord-icon.ico')
 
+    def mainloop(self):
         self.app.mainloop()
-
-fenetre = Fenetre()
