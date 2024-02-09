@@ -46,7 +46,7 @@ def create_gui():
         if len(message) > 0:
             chat_entry.delete(0, len(message))
             for label in labels:
-                label.pack(side='bottom')  # Ajoute le label au haut de l'affichage
+                label.pack(side='top')  # Ajoute le label au haut de l'affichage
             label = ctk.CTkLabel(interior_frame)  # Ajoutez le label à interior_frame
             label.configure(fg_color='grey21', text_color='white', text=message)
             label.pack(anchor='w', padx=10, pady=10)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
