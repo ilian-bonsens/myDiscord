@@ -24,9 +24,9 @@ def create_gui():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     #Créer une frame qui contiendra les widgets de la conversation
-    root.checkbox_frame = ctk.CTkFrame(root)
-    root.checkbox_frame.grid(row=0, column=0, padx=470, pady=(150, 0), sticky="nsw")
-    root.checkbox_frame.configure(width=780, height=470, fg_color='grey20', corner_radius=0)
+    scrollable_frame = ctk.CTkScrollableFrame(root)
+    scrollable_frame.grid(row=0, column=0, padx=470, pady=(150, 0), sticky="nsw")
+    scrollable_frame.configure(width=780, height=470, fg_color='grey20', corner_radius=0)
 
     chat_entry = ctk.CTkEntry(root, width=650, height=35)
     chat_entry.place(x=540, y=565, anchor='nw')
@@ -47,6 +47,7 @@ def create_gui():
             label.place(x=540, y=y_position, anchor='nw')
             label.configure(fg_color='grey21', text_color='white', text=message)
             labels.append(label)
+            root.update_idletasks()  # Mettez à jour l'interface utilisateur
 
     chat_entry.bind("<Return>", update_label)
 
