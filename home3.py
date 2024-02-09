@@ -30,8 +30,8 @@ def create_gui():
 
     # Créer un CTkScrollableFrame à l'intérieur du CTkFrame
     interior_frame = ctk.CTkScrollableFrame(frame)
-    interior_frame.configure(width=635, height=400, fg_color='grey10', corner_radius=0)
-    interior_frame.place(x=80, y=0, anchor='nw')  # Modifiez les coordonnées x et y
+    interior_frame.configure(width=635, height=390, fg_color='black', corner_radius=0)
+    interior_frame.place(x=80, y=10, anchor='nw')  # Modifiez les coordonnées x et y
 
     chat_entry = ctk.CTkEntry(root, width=650, height=35)
     chat_entry.place(x=550, y=565, anchor='nw')
