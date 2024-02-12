@@ -1,6 +1,6 @@
 import tkinter as tk
-from PIL import Image, ImageTk
 import customtkinter as ctk
+from PIL import Image, ImageTk
 import datetime as dt
 
 custom_font = ("Gill Sans MT", 13)
