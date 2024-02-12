@@ -2,97 +2,70 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
 
-def clear_entry(event, entry):
-    entry.delete(0, tk.END)
+class Inscription:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.setup_gui()
 
-def open_inscription():
-    # Importer le contenu de inscription.py
-    import inscription
-    
-# Modifiez la signature de la fonction pour accepter l'entry comme argument
-def toggle_password_visibility(entry):
-    if entry.cget('show') == '*':
-        entry.configure(show='')
-    else:
-        entry.configure(show='*')
+    def clear_entry(self, event, entry):
+        entry.delete(0, tk.END)
 
-def create_gui():
-    root = tk.Tk()
-    root.title("Discord IML")
-    root.geometry("1280x720")
-    root.configure(bg='black')
+    def open_inscription(self):
+        # Importer le contenu de inscription.py
+        import inscription
 
-    # Charger l'image de fond
-    image = Image.open("images/page2.png")
-    # Redimensionner l'image
-    image = image.resize((1280, 720), Image.Resampling.LANCZOS)
-    # Convertir l'image PIL en image Tkinter
-    bg_image = ImageTk.PhotoImage(image)
-    # Créer un label pour afficher l'image de fond
-    bg_label = tk.Label(root, image=bg_image)
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-    
-    # Définition de la police pour les entrées
-    custom_font = ("Gill Sans MT", 14)
-    
-    # Créer les champs de saisie pour le nom
-    nom_entry = ctk.CTkEntry(root, width=250, font=custom_font, justify='center')
-    nom_entry.place(x=640, y=300, anchor='center')
-    nom_entry.configure(placeholder_text="Nom", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0)
-
-    # Créer les champs de saisie pour le prénom
-    prenom_entry = ctk.CTkEntry(root, width=250, font=custom_font, justify='center')
-    prenom_entry.place(x=640, y=360, anchor='center')
-    prenom_entry.configure(placeholder_text="Prénom", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0)
-
-    # Créer les champs de saisie pour l'email
-    email_entry = ctk.CTkEntry(root, width=250, font=custom_font, justify='center')
-    email_entry.place(x=640, y=420, anchor='center')
-    email_entry.configure(placeholder_text="E-mail", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0)
-
-    # Créer les champs de saisie pour le mot de passe
-    mot_de_passe_entry = ctk.CTkEntry(root, width=250, show='*', font=("Gill Sans MT", 14), justify='center')
-    mot_de_passe_entry.place(x=640, y=480, anchor='center')
-    mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0)
-
-    # Charger et redimensionner l'image de l'œil
-    eye_img = Image.open("images/oeil.png")
-    eye_img.thumbnail((eye_img.width, 13), Image.Resampling.LANCZOS)
-    eye_open_image = ImageTk.PhotoImage(eye_img)
-
-    # Créer un bouton pour afficher/masquer le mot de passe
-    # Utilisez une fonction lambda pour passer mot_de_passe_entry en argument
-    eye_btn = tk.Button(root, image=eye_open_image, command=lambda: toggle_password_visibility(mot_de_passe_entry), borderwidth=0, bg='black')
-    eye_btn.image = eye_open_image  # Gardez une référence de l'image pour éviter le ramasse-miettes
-    eye_btn.place(x=727, y=473)  # Ajustez si nécessaire pour l'emplacement exact
-     
-    # Ajouter un bouton pour Continuer
-    inscription_button = ctk.CTkButton(root, text="Continuer", command=open_inscription, fg_color='#2d243f',text_color="#9489ae")
-    inscription_button.place(x=640, y=620, anchor='center')
-    
-    # Créer un Canvas pour la croix à l'emplacement désiré
-    canvas_cross = tk.Canvas(root, width=24, height=24, bg='#2d243f', highlightthickness=0)
-    canvas_cross.place(x=423, y=543)  # Ajustez si nécessaire pour l'emplacement exact
-
-    # Identifiant pour les éléments de la croix sur le canvas
-    cross_elements = None
-
-    # Fonction pour afficher/cacher la croix
-    def toggle_cross(event):
-        nonlocal cross_elements
-        if cross_elements:
-            # Si la croix est déjà affichée, supprimer les éléments
-            canvas_cross.delete("cross")
-            cross_elements = None
+    def toggle_password_visibility(self, entry):
+        if entry.cget('show') == '*':
+            entry.configure(show='')
         else:
-            # Si la croix n'est pas affichée, la dessiner
-            canvas_cross.create_line(0, 0, 25, 25, fill='#9489ae', width=2, tags="cross")
-            canvas_cross.create_line(0, 25, 25, 0, fill='#9489ae', width=2, tags="cross")
-            cross_elements = True  # Mettre à jour l'indicateur
+            entry.configure(show='*')
 
-    # Lie l'événement de clic à la zone où la croix doit apparaître/disparaître
-    canvas_cross.bind("<Button-1>", toggle_cross)
-    root.mainloop()
+    def setup_gui(self):
+        self.root.title("Discord IML")
+        self.root.geometry("1280x720")
+        self.root.configure(bg='black')
+
+        # Charger l'image de fond
+        image = Image.open("images/page2.png")
+        image = image.resize((1280, 720), Image.Resampling.LANCZOS)
+        bg_image = ImageTk.PhotoImage(image)
+        bg_label = tk.Label(self.root, image=bg_image)
+        bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+        bg_label.image = bg_image  # Gardez une référence de l'image
+
+        custom_font = ("Gill Sans MT", 14)
+
+        self.create_entry("Nom", 300)
+        self.create_entry("Prénom", 360)
+        self.create_entry("E-mail", 420)
+        self.create_password_entry(480)
+
+        self.add_buttons()
+
+        self.root.mainloop()
+
+    def create_entry(self, placeholder, y):
+        entry = ctk.CTkEntry(self.root, width=250, font=("Gill Sans MT", 14), justify='center')
+        entry.place(x=640, y=y, anchor='center')
+        entry.configure(placeholder_text=placeholder, fg_color="black", text_color="#9489ae", placeholder_text_color="#9489ae", corner_radius=0)
+
+    def create_password_entry(self, y):
+        entry = ctk.CTkEntry(self.root, width=250, show='*', font=("Gill Sans MT", 14), justify='center')
+        entry.place(x=640, y=y, anchor='center')
+        entry.configure(placeholder_text="Mot de passe", fg_color="black", text_color="#9489ae", placeholder_text_color="#9489ae", corner_radius=0)
+        self.add_eye_button(entry, y-7)
+
+    def add_eye_button(self, entry, y):
+        eye_img = Image.open("images/oeil.png")
+        eye_img.thumbnail((eye_img.width, 13), Image.Resampling.LANCZOS)
+        eye_open_image = ImageTk.PhotoImage(eye_img)
+        eye_btn = tk.Button(self.root, image=eye_open_image, command=lambda: self.toggle_password_visibility(entry), borderwidth=0, bg='black')
+        eye_btn.image = eye_open_image
+        eye_btn.place(x=727, y=y)
+
+    def add_buttons(self):
+        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=self.open_inscription, fg_color='#2d243f', text_color="#9489ae")
+        inscription_button.place(x=640, y=620, anchor='center')
 
 if __name__ == "__main__":
-    create_gui()
+    app = Inscription()
