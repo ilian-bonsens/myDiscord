@@ -9,6 +9,13 @@ def open_inscription():
     # Importer le contenu de inscription.py
     import inscription
 
+# Modifiez la signature de la fonction pour accepter l'entry comme argument
+def toggle_password_visibility(entry):
+    if entry.cget('show') == '*':
+        entry.configure(show='')
+    else:
+        entry.configure(show='*')
+
 def create_gui():
     root = tk.Tk()
     root.title("Discord IML")
@@ -36,6 +43,17 @@ def create_gui():
     mot_de_passe_entry = ctk.CTkEntry(root, width=250, show='*', justify="center")
     mot_de_passe_entry.place(x=640, y=450, anchor='center')
     mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MT", 12))
+
+    # Charger et redimensionner l'image de l'œil
+    eye_img = Image.open("images/oeil.png")
+    eye_img.thumbnail((eye_img.width, 13), Image.Resampling.LANCZOS)
+    eye_open_image = ImageTk.PhotoImage(eye_img)
+
+    # Créer un bouton pour afficher/masquer le mot de passe
+    # Utilisez une fonction lambda pour passer mot_de_passe_entry en argument
+    eye_btn = tk.Button(root, image=eye_open_image, command=lambda: toggle_password_visibility(mot_de_passe_entry), borderwidth=0, bg='black')
+    eye_btn.image = eye_open_image  # Gardez une référence de l'image pour éviter le ramasse-miettes
+    eye_btn.place(x=727, y=443)  # Ajustez si nécessaire pour l'emplacement exact
 
     # Ajouter un label "Pas encore inscrit ?"
     inscription_label = tk.Label(root, text="Pas encore inscrit ?", bg='#9489ae', fg='#2d243f', font=("Gill Sans MT", 12))
