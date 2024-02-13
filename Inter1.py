@@ -33,8 +33,6 @@ def create_gui():
     identifiant_entry.place(x=640, y=390, anchor='center')
     identifiant_entry.configure(placeholder_text="Identifiant", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MTç", 12))
 
-
-
     mot_de_passe_entry = ctk.CTkEntry(root, width=250, show='*', justify="center")
     mot_de_passe_entry.place(x=640, y=450, anchor='center')
     mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MT", 12))
