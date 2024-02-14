@@ -2,70 +2,58 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
 
-def clear_entry(event, entry):
-    entry.delete(0, tk.END)
+class Inter:
+    @staticmethod
+    def clear_entry(event, entry):
+        entry.delete(0, tk.END)
 
-def open_inscription():
-    # Importer le contenu de inscription.py
-    import inscription
+    @staticmethod
+    def open_inscription():
+        import inscription
 
-# Modifiez la signature de la fonction pour accepter l'entry comme argument
-def toggle_password_visibility(entry):
-    if entry.cget('show') == '*':
-        entry.configure(show='')
-    else:
-        entry.configure(show='*')
+    @staticmethod
+    def toggle_password_visibility(entry):
+        if entry.cget('show') == '*':
+            entry.configure(show='')
+        else:
+            entry.configure(show='*')
 
-def create_gui():
-    root = tk.Tk()
-    root.title("Discord IML")
-    root.geometry("1280x720")
-    root.configure(bg='black')
+    def create_gui(self):
+        root = tk.Tk()
+        root.title("Discord IML")
+        root.geometry("1280x720")
+        root.configure(bg='black')
 
-    # Charger l'image de fond
-    image = Image.open("images/page1.png")
+        image = Image.open("images/page1.png")
+        image = image.resize((1280, 720), Image.LANCZOS)
+        bg_image = ImageTk.PhotoImage(image)
 
-    # Redimensionner l'image
-    image = image.resize((1280, 720), Image.LANCZOS)
+        bg_label = tk.Label(root, image=bg_image)
+        bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-    # Convertir l'image PIL en image Tkinter
-    bg_image = ImageTk.PhotoImage(image)
+        identifiant_entry = ctk.CTkEntry(root, width=250, justify="center")
+        identifiant_entry.place(x=640, y=390, anchor='center')
+        identifiant_entry.configure(placeholder_text="Identifiant", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MTç", 12))
 
-    # Créer un label pour afficher l'image de fond
-    bg_label = tk.Label(root, image=bg_image)
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+        mot_de_passe_entry = ctk.CTkEntry(root, width=250, show='*', justify="center")
+        mot_de_passe_entry.place(x=640, y=450, anchor='center')
+        mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MT", 12))
 
-    # Créer les champs de saisie pour l'identifiant et le mot de passe
-    identifiant_entry = ctk.CTkEntry(root, width=250, justify="center")
-    identifiant_entry.place(x=640, y=390, anchor='center')
-    identifiant_entry.configure(placeholder_text="Identifiant", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MTç", 12))
+        eye_img = Image.open("images/oeil.png")
+        eye_img.thumbnail((eye_img.width, 13), Image.Resampling.LANCZOS)
+        eye_open_image = ImageTk.PhotoImage(eye_img)
 
+        eye_btn = tk.Button(root, image=eye_open_image, command=lambda: self.toggle_password_visibility(mot_de_passe_entry), borderwidth=0, bg='black')
+        eye_btn.image = eye_open_image
+        eye_btn.place(x=727, y=443)
 
+        inscription_label = tk.Label(root, text="Pas encore inscrit ?", bg='#9489ae', fg='#2d243f', font=("Gill Sans MT", 12))
+        inscription_label.place(x=640, y=490, anchor='center')
 
-    mot_de_passe_entry = ctk.CTkEntry(root, width=250, show='*', justify="center")
-    mot_de_passe_entry.place(x=640, y=450, anchor='center')
-    mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MT", 12))
+        inscription_button = ctk.CTkButton(root, text="Inscription", command=self.open_inscription, fg_color='#2d243f',text_color="#9489ae", font=("Gill Sans MT", 18))
+        inscription_button.place(x=640, y=520, anchor='center')
 
-    # Charger et redimensionner l'image de l'œil
-    eye_img = Image.open("images/oeil.png")
-    eye_img.thumbnail((eye_img.width, 13), Image.Resampling.LANCZOS)
-    eye_open_image = ImageTk.PhotoImage(eye_img)
-
-    # Créer un bouton pour afficher/masquer le mot de passe
-    # Utilisez une fonction lambda pour passer mot_de_passe_entry en argument
-    eye_btn = tk.Button(root, image=eye_open_image, command=lambda: toggle_password_visibility(mot_de_passe_entry), borderwidth=0, bg='black')
-    eye_btn.image = eye_open_image  # Gardez une référence de l'image pour éviter le ramasse-miettes
-    eye_btn.place(x=727, y=443)  # Ajustez si nécessaire pour l'emplacement exact
-
-    # Ajouter un label "Pas encore inscrit ?"
-    inscription_label = tk.Label(root, text="Pas encore inscrit ?", bg='#9489ae', fg='#2d243f', font=("Gill Sans MT", 12))
-    inscription_label.place(x=640, y=490, anchor='center')
-
-    # Ajouter un bouton pour ouvrir la page d'inscription
-    inscription_button = ctk.CTkButton(root, text="Inscription", command=open_inscription, fg_color='#2d243f',text_color="#9489ae", font=("Gill Sans MT", 18))
-    inscription_button.place(x=640, y=520, anchor='center')
-
-    root.mainloop()
+        root.mainloop()
 
 if __name__ == "__main__":
-    create_gui()
+    Inter().create_gui()
