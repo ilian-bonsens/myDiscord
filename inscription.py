@@ -4,15 +4,11 @@ import customtkinter as ctk
 
 class Inscription:
     def __init__(self):
-        self.root = tk.Tk()
+        self.root = tk.Toplevel()  # Remplacez cette ligne
         self.setup_gui()
 
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
-
-    def open_inscription(self):
-        # Importer le contenu de inscription.py
-        import inscription
 
     def toggle_password_visibility(self, entry):
         if entry.cget('show') == '*':
@@ -66,6 +62,9 @@ class Inscription:
     def add_buttons(self):
         inscription_button = ctk.CTkButton(self.root, text="Continuer", command=self.open_inscription, fg_color='#2d243f', text_color="#9489ae")
         inscription_button.place(x=640, y=620, anchor='center')
+
+    def open_inscription(self):
+        pass # rajouter le code qui renvoie vers la page home
 
 if __name__ == "__main__":
     app = Inscription()

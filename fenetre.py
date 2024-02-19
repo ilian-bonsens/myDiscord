@@ -10,4 +10,5 @@ class Fenetre:
 
         self.app.mainloop()
 
-fenetre = Fenetre()
+if __name__ == "__main__":
+    fenetre = Fenetre()
