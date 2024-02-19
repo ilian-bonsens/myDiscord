@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
+import mysql.connector
 
 class Inscription:
     def __init__(self):
@@ -33,12 +34,12 @@ class Inscription:
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
         bg_label.image = bg_image  # Gardez une référence de l'image
 
-        custom_font = ("Gill Sans MT", 14)
-
-        self.create_entry("Nom", 300)
-        self.create_entry("Prénom", 360)
-        self.create_entry("E-mail", 420)
-        self.create_password_entry(480)
+        self.entries = {
+            "nom": self.create_entry("Nom", 300),
+            "prenom": self.create_entry("Prénom", 360),
+            "email": self.create_entry("E-mail", 420),
+            "password": self.create_password_entry(480)
+        }
 
         self.add_buttons()
 
@@ -48,12 +49,14 @@ class Inscription:
         entry = ctk.CTkEntry(self.root, width=250, font=("Gill Sans MT", 14), justify='center')
         entry.place(x=640, y=y, anchor='center')
         entry.configure(placeholder_text=placeholder, fg_color="black", text_color="#9489ae", placeholder_text_color="#9489ae", corner_radius=0)
+        return entry
 
     def create_password_entry(self, y):
         entry = ctk.CTkEntry(self.root, width=250, show='*', font=("Gill Sans MT", 14), justify='center')
         entry.place(x=640, y=y, anchor='center')
         entry.configure(placeholder_text="Mot de passe", fg_color="black", text_color="#9489ae", placeholder_text_color="#9489ae", corner_radius=0)
         self.add_eye_button(entry, y-7)
+        return entry
 
     def add_eye_button(self, entry, y):
         eye_img = Image.open("images/oeil.png")
@@ -64,8 +67,30 @@ class Inscription:
         eye_btn.place(x=727, y=y)
 
     def add_buttons(self):
-        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=self.open_inscription, fg_color='#2d243f', text_color="#9489ae")
+        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=self.save_user_to_database, fg_color='#2d243f', text_color="#9489ae")
         inscription_button.place(x=640, y=620, anchor='center')
+
+    def save_user_to_database(self):
+        # Collecter les données des entrées
+        nom = self.entries["nom"].get()
+        prenom = self.entries["prenom"].get()
+        email = self.entries["email"].get()
+        password = self.entries["password"].get()
+
+        # Connexion à la base de données
+        try:
+            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='mars1993')
+            cursor = conn.cursor()
+            query = "INSERT INTO utilisateurs (nom, prenom, mail, mot_de_passe) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query, (nom, prenom, email, password))
+            conn.commit()
+            print("Utilisateur ajouté avec succès")
+        except mysql.connector.Error as e:
+            print(f"Erreur lors de l'insertion dans la base de données: {e}")
+        finally:
+            if conn.is_connected():
+                cursor.close()
+                conn.close()
 
 if __name__ == "__main__":
     app = Inscription()
