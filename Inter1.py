@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
+import mysql.connector
 
 class Inter:
     @staticmethod
@@ -17,6 +18,25 @@ class Inter:
             entry.configure(show='')
         else:
             entry.configure(show='*')
+
+    @staticmethod
+    def check_user(identifiant, password):
+        try:
+            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='azerty1234')
+            cursor = conn.cursor()
+            query = "SELECT * FROM utilisateurs WHERE identifiant = %s AND mot_de_passe = %s"
+            cursor.execute(query, (identifiant, password))
+            result = cursor.fetchone()
+            if result is None:
+                print("Identifiant ou mot de passe incorrect")
+            else:
+                print("Connexion réussie")
+        except mysql.connector.Error as e:
+            print(f"Erreur lors de la vérification dans la base de données: {e}")
+        finally:
+            if conn.is_connected():
+                cursor.close()
+                conn.close()
 
     def create_gui(self):
         root = tk.Tk()
