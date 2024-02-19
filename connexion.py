@@ -10,9 +10,15 @@ class Connexion:
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
 
-    def open_connexion(self): # lorsque l'on clique sur le bouton connexion, cela renvoie à la page d'accueil
+    def home(self): # lorsque l'on clique sur le bouton connexion, cela renvoie à la page d'accueil
         # Importer le contenu de home.py
-        import home # rajouter le fichier home.py dans le dossier
+        from home import Home
+
+        # Créer une instance de la classe Home
+        home = Home()
+
+        # Appeler la méthode create_gui pour afficher la page d'accueil
+        home.create_gui
 
     # Modifiez la signature de la fonction pour accepter l'entry comme argument
     def toggle_password_visibility(self, entry):
@@ -70,7 +76,7 @@ class Connexion:
         eye_btn.place(x=727, y=443)  # Ajustez si nécessaire pour l'emplacement exact
 
         # Ajouter un bouton pour ouvrir la page d'inscription
-        connexion_button = ctk.CTkButton(self.root, text="Connexion", command=self.open_connexion, fg_color='#2d243f',text_color="#9489ae", font=("Gill Sans MT", 18))
+        connexion_button = ctk.CTkButton(self.root, text="Connexion", command=self.home, fg_color='#2d243f',text_color="#9489ae", font=("Gill Sans MT", 18))
         connexion_button.place(x=640, y=500, anchor='center')
 
         # Ajouter un label "Pas encore inscrit ?"

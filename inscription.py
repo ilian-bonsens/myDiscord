@@ -60,11 +60,18 @@ class Inscription:
         eye_btn.place(x=727, y=y)
 
     def add_buttons(self):
-        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=self.open_inscription, fg_color='#2d243f', text_color="#9489ae")
+        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=self.connexion, fg_color='#2d243f', text_color="#9489ae")
         inscription_button.place(x=640, y=620, anchor='center')
 
-    def open_inscription(self):
-        pass # rajouter le code qui renvoie vers la page home
+    def connexion(self):
+        # Importer la classe Connexion du fichier connexion.py
+        from connexion import Connexion
+
+        # Créer une instance de la classe Connexion
+        connexion = Connexion()
+
+        # Appeler la méthode setup_gui pour afficher le formulaire de connexion
+        connexion.create_gui()
 
 if __name__ == "__main__":
     app = Inscription()

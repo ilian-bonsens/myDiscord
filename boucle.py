@@ -1,28 +1,29 @@
 import tkinter as tk
 import customtkinter as ctk
-from fenetre import Fenetre
 from inscription import Inscription
 from connexion import Connexion
 
-class Boucle:
+class Fenetre:
     def __init__(self):
-        # Initialisation de l'interface graphique Tkinter
-        self.fenetre = Fenetre()
-        self.etat = "connexion"
+        self.app = ctk.CTk()
+        self.framerate = 60
+        self.app.title("Discord IML")
+        self.app.geometry("1280x720")
+        self.app.iconbitmap('images/discord-icon.ico')
+
+        self.etat = "connexion"  # Initialiser l'état de la fenêtre
+        self.run()  # Lancer la boucle principale
 
     def run(self):
         while True:
-            #noms des fichiers et class à changer pour code de lucas
             if self.etat == "connexion":
-                connexion = Connexion(self.fenetre.ecran)
+                connexion = Connexion(self.app)
                 self.etat = connexion.run()
-            #transition marion
             elif self.etat == "inscription":
-                inscription = Inscription(self.fenetre.ecran)
+                inscription = Inscription(self.app)
                 self.etat = inscription.run()
             elif self.etat == "quitter":
                 break
 
 if __name__ == "__main__":
-    chat = Boucle()
-    chat.run()
+    fenetre = Fenetre()
