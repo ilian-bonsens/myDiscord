@@ -80,6 +80,7 @@ class Tchat:
             self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
 
     def message_database(self, message, date_time):
+        # Enregistrement du message dans la base de données
         try:
             mydb = mysql.connector.connect(
                 host="localhost",
@@ -94,11 +95,13 @@ class Tchat:
             date_heure = date_time
             utilisateur = "root"
 
+            # Insertion du message dans la base de données
             sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
-
+            # Exécution de la requête
             mycursor.execute(sql, (utilisateur, date_heure, contenu))
-
             mydb.commit()
+            
+        # Gestion des erreurs
         except mysql.connector.Error as err:
             print("Une erreur MySQL s'est produite :", err)
         finally:
