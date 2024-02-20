@@ -38,23 +38,28 @@ class Connexion:
         # Appeler la méthode setup_gui pour afficher le formulaire d'inscription
         inscription.setup_gui()
 
-    def check_user(identifiant, password):
+    def check_user(self, identifiant, password):
         try:
             conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
             cursor = conn.cursor()
             query = "SELECT * FROM utilisateurs WHERE identifiant = %s AND mot_de_passe = %s"
             cursor.execute(query, (identifiant, password))
-            result = cursor.fetchone()
+            result = cursor.fetchone()  # Utilisez fetchone() au lieu de fetchall()
             if result is None:
                 print("Identifiant ou mot de passe incorrect")
+                return False  # Retourne False si aucun utilisateur trouvé
             else:
                 print("Connexion réussie")
+                self.inscription_label.config(state=tk.ACTIVE)  # Active le lien si l'utilisateur est trouvé
+                return True  # Retourne True si l'utilisateur est trouvé
         except mysql.connector.Error as e:
             print(f"Erreur lors de la vérification dans la base de données: {e}")
+            return False  # En cas d'erreur, retourne False
         finally:
             if conn.is_connected():
                 cursor.close()
                 conn.close()
+
 
     def create_gui(self):
         self.root.title("Discord IML")
