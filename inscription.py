@@ -79,7 +79,7 @@ class Inscription:
 
         # Connexion à la base de données
         try:
-            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='mars1993')
+            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
             cursor = conn.cursor()
             query = "INSERT INTO utilisateurs (nom, prenom, mail, mot_de_passe) VALUES (%s, %s, %s, %s)"
             cursor.execute(query, (nom, prenom, email, password))
