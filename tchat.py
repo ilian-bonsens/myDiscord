@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import datetime as dt
+import mysql.connector
 
 class Tchat:
     def __init__(self):
@@ -66,7 +67,7 @@ class Tchat:
     def update_label(self, event):
         message = self.chat_entry.get()
         now = dt.datetime.now()
-        date_time = now.strftime('%H:%M:%S')
+        date_time = now.strftime('%Y-%m-%d %H:%M:%S')
         if len(message) > 0:
             self.chat_entry.delete(0, len(message))
             for label in self.labels:
@@ -76,6 +77,35 @@ class Tchat:
             label.pack(anchor='w', padx=5, pady=5)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
+            self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
 
+    def message_database(self, message, date_time):
+        try:
+            mydb = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                database="Discord",
+                password="AscZdvEfb520.+SQL"
+            )
+
+            mycursor = mydb.cursor()
+
+            contenu = message
+            date_heure = date_time
+            utilisateur = "root"
+
+            sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
+
+            mycursor.execute(sql, (utilisateur, date_heure, contenu))
+
+            mydb.commit()
+        except mysql.connector.Error as err:
+            print("Une erreur MySQL s'est produite :", err)
+        finally:
+            if mycursor:
+                mycursor.close()
+            if mydb:
+                mydb.close()
+        
 if __name__ == "__main__":
     app = Tchat()
