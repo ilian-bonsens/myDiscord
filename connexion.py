@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
-import mysql.connector
+import mysql.connector, hashlib, os
 
 class Connexion:
     def __init__(self):
@@ -50,15 +50,22 @@ class Connexion:
         try:
             conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
             cursor = conn.cursor()
-            query = "SELECT * FROM utilisateurs WHERE mail = %s AND mot_de_passe = %s"
-            cursor.execute(query, (mail, password))
+            query = "SELECT mot_de_passe, sel FROM utilisateurs WHERE mail = %s"
+            cursor.execute(query, (mail,))
             result = cursor.fetchone() # Récupère la première ligne de résultat
             if result is None:
-                print("Mail ou mot de passe incorrect")
+                print("Mail incorrect")
                 return False  # Retourne False si aucun utilisateur trouvé
             else:
-                print("Connexion réussie")
-                return True  # Retourne True si l'utilisateur est trouvé
+                stored_password, sel = result
+                # Hash the user's password with the stored salt
+                hashed_password = hashlib.sha384((password + sel).encode()).hexdigest()
+                if hashed_password == stored_password:
+                    print("Connexion réussie")
+                    return True  # Retourne True si l'utilisateur est trouvé
+                else:
+                    print("Mot de passe incorrect")
+                    return False
         except mysql.connector.Error as e:
             print(f"Erreur lors de la vérification dans la base de données: {e}")
             return False  # En cas d'erreur, retourne False
