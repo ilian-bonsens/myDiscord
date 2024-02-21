@@ -105,7 +105,7 @@ class Connexion:
 
         # Créer un bouton pour afficher/masquer le mot de passe
         # Utilisez une fonction lambda pour passer mot_de_passe_entry en argument
-        eye_btn = tk.Button(self.root, image=eye_open_image, command=lambda: self.toggle_password_visibility(mot_de_passe_entry), borderwidth=0, bg='black')
+        eye_btn = tk.Button(self.root, image=eye_open_image, command=lambda: self.toggle_password_visibility(self.mot_de_passe_entry), borderwidth=0, bg='black')
         eye_btn.image = eye_open_image  # Gardez une référence de l'image pour éviter le ramasse-miettes
         eye_btn.place(x=727, y=443)  # Ajustez si nécessaire pour l'emplacement exact
 
