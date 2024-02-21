@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
 import mysql.connector
+import hashlib, os
 
 class Inscription:
     def __init__(self):
@@ -76,13 +77,15 @@ class Inscription:
         prenom = self.entries["prenom"].get()
         email = self.entries["email"].get()
         password = self.entries["password"].get()
+        salt = os.urandom(16)
+        hashed_password = hashlib.sha384((password + salt.hex()).encode()).hexdigest()
 
         # Connexion à la base de données
         try:
             conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
             cursor = conn.cursor()
-            query = "INSERT INTO utilisateurs (nom, prenom, mail, mot_de_passe) VALUES (%s, %s, %s, %s)"
-            cursor.execute(query, (nom, prenom, email, password))
+            query = "INSERT INTO utilisateurs (nom, prenom, mail, mot_de_passe, sel) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(query, (nom, prenom, email, hashed_password, salt.hex()))
             conn.commit()
             print("Utilisateur ajouté avec succès")
         except mysql.connector.Error as e:
