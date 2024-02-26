@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import Binary
 from datetime import datetime
 import sounddevice as sd
 import wavio
@@ -22,11 +23,20 @@ db_config = {
 def compress_audio(audio_data):
     return gzip.compress(audio_data)
 
-# Fonction pour sauvegarder l'audio compressé dans la base de données
-def save_compressed_audio_to_db(config, audio_data):
+# Fonction pour générer un nom unique pour l'audio
+def generate_audio_title(c):
+    c.execute("SELECT COUNT(*) FROM messages")
+    count = c.fetchone()[0]
+    return f"vocal{count+1}"
+
+# Fonction pour sauvegarder l'audio compressé dans la base de données avec utilisateur
+def save_compressed_audio_to_db(config, audio_data, user_id):
     # Connectez-vous à la base de données
     cnx = mysql.connector.connect(**config)
     c = cnx.cursor()
+
+    # Générez un titre unique pour l'audio
+    audio_title = generate_audio_title(c)
 
     # Comprimez les données audio
     compressed_audio_data = compress_audio(audio_data)
@@ -34,23 +44,24 @@ def save_compressed_audio_to_db(config, audio_data):
     # Obtenez l'heure actuelle
     now = datetime.now()
 
-    # Insérez l'audio compressé et la date/heure dans la base de données
+    # Insérez l'audio compressé, la date/heure et l'utilisateur dans la base de données
     try:
-        c.execute("INSERT INTO messages (audio, date_heure) VALUES (%s, %s)", (compressed_audio_data, now))
-        cnx.commit()  # Commit explicitement, au cas où l'autocommit ne fonctionnerait pas
+        query = "INSERT INTO messages (audio, date_heure, utilisateur) VALUES (%s, %s, %s)"
+        c.execute(query, (compressed_audio_data, now, user_id))
+        cnx.commit()  # N'oubliez pas de commit après l'insertion
+        print(f"Compressed audio '{audio_title}' saved to database for user {user_id}.")
     except Exception as err:
         print(f"Something went wrong: {err}")
-        traceback.print_exc()  # Cela affichera la trace complète de l'erreur
     finally:
         c.close()
         cnx.close()
 
 # Paramètres d'enregistrement
 fs = 44100  # Fréquence d'échantillonnage
-duration = 10  # Durée en secondes
+duration = 5  # Durée en secondes
 
 # Enregistrement de l'audio
-print("Recording for 10 seconds.")
+print("Recording for 5 seconds.")
 myrecording = sd.rec(int(duration * fs), samplerate=fs, channels=2)
 sd.wait()
 print("Recording finished.")
@@ -63,7 +74,8 @@ wavio.write(audio_filename, myrecording, fs, sampwidth=2)
 with open(audio_filename, 'rb') as audio_file:
     audio_data = audio_file.read()
 
-# Sauvegardez l'audio compressé dans la base de données
-save_compressed_audio_to_db(db_config, audio_data)
+# Identifiant de l'utilisateur (doit être récupéré ou défini selon votre logique d'application)
+user_id = "username123"
 
-print("Compressed audio saved to database.")
+# Sauvegardez l'audio compressé dans la base de données
+save_compressed_audio_to_db(db_config, audio_data, user_id)
