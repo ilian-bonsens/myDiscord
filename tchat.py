@@ -3,14 +3,17 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 import datetime as dt
 import mysql.connector
+from connexion import Connexion
 
-class Tchat:
+class Tchat(Connexion):
     def __init__(self):
-        self.root = tk.Toplevel()
         self.custom_font = ("Gill Sans MT", 13)
         self.labels = []
+        super().__init__()  # Initialise la classe parente en premier
+        self.root = tk.Toplevel()
         self.y_position = 350
-        self.create_gui()
+        self.create_gui()  # Crée l'interface utilisateur après l'initialisation de la classe parente
+
 
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
@@ -73,7 +76,7 @@ class Tchat:
             for label in self.labels:
                 label.pack(side='top')  # Ajoute le label au haut de l'affichage
             label = ctk.CTkLabel(self.interior_frame)  # Ajoutez le label à interior_frame
-            label.configure(font=self.custom_font, fg_color='black', text_color='#9489ae', wraplength=610, justify='left', text=f'{message} ({date_time})')
+            label.configure(font=self.custom_font, fg_color='black', text_color='#9489ae', wraplength=610, justify='left', text=f'{Connexion.prenom} : {message} ({date_time})')
             label.pack(anchor='w', padx=5, pady=5)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
@@ -93,10 +96,12 @@ class Tchat:
 
             contenu = message
             date_heure = date_time
-            utilisateur = "root"
+            utilisateur = Connexion.prenom
 
             # Insertion du message dans la base de données
             sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
+            if hasattr(self, 'prenom'): # Vérifie si l'attribut prenom existe
+                print(f'Nouveau message de {Connexion.prenom}')
             # Exécution de la requête
             mycursor.execute(sql, (utilisateur, date_heure, contenu))
             mydb.commit()
