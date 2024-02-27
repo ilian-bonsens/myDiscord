@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 import customtkinter as ctk
 from PIL import Image, ImageTk
@@ -41,7 +42,7 @@ class Tchat:
         button_friends.place(x=255, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_friends.configure(bg='#2d243f')
 
-        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
+        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.open_serveurP)
         button_groups.image = tk_image  # Gardez une référence à l'image
         button_groups.place(x=20, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_groups.configure(bg='#2d243f')
@@ -109,6 +110,9 @@ class Tchat:
                 mycursor.close()
             if mydb:
                 mydb.close()
-        
+
+    def open_serveurP(self):
+        os.system('python3 ServeurP.py')
+
 if __name__ == "__main__":
     app = Tchat()

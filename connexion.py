@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
+import mysql.connector, hashlib, os
 
 class Connexion:
     def __init__(self):
@@ -10,15 +11,23 @@ class Connexion:
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
 
-    def tchat(self): # lorsque l'on clique sur le bouton connexion, cela renvoie à la page d'accueil
-        # Importer le contenu de tchat.py
-        from tchat import Tchat
+    def tchat(self): 
+        # Récupérer les informations d'identification de l'utilisateur
+        identifiant = self.identifiant_entry.get()
+        password = self.mot_de_passe_entry.get()
 
-        # Créer une instance de la classe tchat
-        tchat = Tchat()
+        # Vérifier si l'utilisateur existe
+        if self.check_user(identifiant, password):
+            # Importer le contenu de tchat.py
+            from tchat import Tchat
 
-        # Appeler la méthode create_gui pour afficher la page d'accueil
-        tchat.create_gui
+            # Créer une instance de la classe tchat
+            tchat = Tchat()
+
+            # Appeler la méthode create_gui pour afficher la page d'accueil
+            tchat.create_gui()
+        else:
+            print("Identifiant ou mot de passe incorrect")
 
     # Modifiez la signature de la fonction pour accepter l'entry comme argument
     def toggle_password_visibility(self, entry):
@@ -37,10 +46,42 @@ class Connexion:
         # Appeler la méthode setup_gui pour afficher le formulaire d'inscription
         inscription.setup_gui()
 
+    def check_user(self, mail, password):
+        try:
+            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
+            cursor = conn.cursor()
+            query = "SELECT mot_de_passe, sel FROM utilisateurs WHERE mail = %s"
+            cursor.execute(query, (mail,))
+            result = cursor.fetchone() # Récupère la première ligne de résultat
+            if result is None:
+                print("Mail incorrect")
+                return False  # Retourne False si aucun utilisateur trouvé
+            else:
+                stored_password, sel = result
+                # Hash the user's password with the stored salt
+                hashed_password = hashlib.sha384((password + sel).encode()).hexdigest()
+                if hashed_password == stored_password:
+                    print("Connexion réussie")
+                    return True  # Retourne True si l'utilisateur est trouvé
+                else:
+                    print("Mot de passe incorrect")
+                    return False
+        except mysql.connector.Error as e:
+            print(f"Erreur lors de la vérification dans la base de données: {e}")
+            return False  # En cas d'erreur, retourne False
+        finally:
+            if conn.is_connected():
+                cursor.close()
+                conn.close()
+
     def create_gui(self):
+        if self.root is None:
+            self.root = tk.Toplevel()
         self.root.title("Discord IML")
         self.root.geometry("1280x720")
         self.root.configure(bg='black')
+        self.identifiant_entry = ctk.CTkEntry(self.root, width=250, justify="center")
+        self.mot_de_passe_entry = ctk.CTkEntry(self.root, width=250, show='*', justify="center")
 
         # Charger l'image de fond
         image = Image.open("images/page1.png")
@@ -56,13 +97,13 @@ class Connexion:
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Créer les champs de saisie pour l'identifiant et le mot de passe
-        identifiant_entry = ctk.CTkEntry(self.root, width=250, justify="center")
-        identifiant_entry.place(x=640, y=390, anchor='center')
-        identifiant_entry.configure(placeholder_text="Identifiant", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MTç", 12))
+        self.identifiant_entry = ctk.CTkEntry(self.root, width=250, justify="center")
+        self.identifiant_entry.place(x=640, y=390, anchor='center')
+        self.identifiant_entry.configure(placeholder_text="Identifiant", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MTç", 12))
 
-        mot_de_passe_entry = ctk.CTkEntry(self.root, width=250, show='*', justify="center")
-        mot_de_passe_entry.place(x=640, y=450, anchor='center')
-        mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MT", 12))
+        self.mot_de_passe_entry = ctk.CTkEntry(self.root, width=250, show='*', justify="center")
+        self.mot_de_passe_entry.place(x=640, y=450, anchor='center')
+        self.mot_de_passe_entry.configure(placeholder_text="Mot de passe", fg_color="black",text_color="#9489ae",placeholder_text_color="#9489ae", corner_radius=0, font=("Gill Sans MT", 12))
 
         # Charger et redimensionner l'image de l'œil
         eye_img = Image.open("images/oeil.png")
@@ -71,7 +112,7 @@ class Connexion:
 
         # Créer un bouton pour afficher/masquer le mot de passe
         # Utilisez une fonction lambda pour passer mot_de_passe_entry en argument
-        eye_btn = tk.Button(self.root, image=eye_open_image, command=lambda: self.toggle_password_visibility(mot_de_passe_entry), borderwidth=0, bg='black')
+        eye_btn = tk.Button(self.root, image=eye_open_image, command=lambda: self.toggle_password_visibility(self.mot_de_passe_entry), borderwidth=0, bg='black')
         eye_btn.image = eye_open_image  # Gardez une référence de l'image pour éviter le ramasse-miettes
         eye_btn.place(x=727, y=443)  # Ajustez si nécessaire pour l'emplacement exact
 
