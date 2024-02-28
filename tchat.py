@@ -3,15 +3,18 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 import datetime as dt
 import mysql.connector
+import emoji
 from connexion import Connexion
 
 class Tchat(Connexion):
     def __init__(self):
-        self.custom_font = ("Gill Sans MT", 13)
+        self.custom_font = ("Gill Sans MT", 16)
+        self.emoji_font = ("Segoe UI Emoji", 18)
         self.labels = []
         super().__init__()  # Initialise la classe parente en premier
         self.root = tk.Toplevel()
         self.y_position = 350
+        self.emoji_fenetre = None
         self.create_gui()  # Crée l'interface utilisateur après l'initialisation de la classe parente
 
 
@@ -65,6 +68,12 @@ class Tchat(Connexion):
 
         self.chat_entry.bind("<Return>", self.update_label)
 
+        # Créer un bouton pour des emojis
+        button_emojis = tk.Button(self.root, image=tk_image, command=self.insert_emoji, borderwidth=0, highlightthickness=0)
+        button_emojis.image = tk_image  # Gardez une référence à l'image
+        button_emojis.place(x=1128, y=570, anchor='nw')
+        button_emojis.configure(bg='#2d243f', width=25, height=25)
+
         self.root.mainloop()
 
     def update_label(self, event):
@@ -81,6 +90,26 @@ class Tchat(Connexion):
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
             self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
+
+    def insert_emoji(self):
+        # Crée une nouvelle fenêtre
+        self.emoji_window = tk.Toplevel(self.root)
+        self.emoji_window.title("Choisir un emoji")
+        self.emoji_window.geometry("287x50")
+        
+        # Crée une liste d'emojis
+        emojis = ['\U0001F600', '\U0001F605', '\U0001F602', '\U0001F633', '\U0001F9D0', '\U0001F60D', '\U0001F972', '\U0001F910']
+
+        # Crée un bouton pour chaque emoji
+        for i, e in enumerate(emojis):
+            button = tk.Button(self.emoji_window, text=emoji.emojize(e), command=lambda e=e: self.on_emoji_click(e), height=1, width=2)
+            button['font'] = ("Segoe UI Emoji", 18)
+            button.grid(row=i//10, column=i%10)  # Arrange les boutons en une grille de 10x10
+
+    def on_emoji_click(self, e):
+        # Insère l'emoji dans le champ de texte
+        self.chat_entry.insert(tk.END, emoji.emojize(e))
+        self.chat_entry.configure(font=self.emoji_font)
 
     def message_database(self, message, date_time):
         # Enregistrement du message dans la base de données
