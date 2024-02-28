@@ -32,6 +32,8 @@ class Main:
         self.root.mainloop()
 
     def connexion(self):
+        self.root.withdraw()
+
         # Importer la classe Connexion du fichier connexion.py
         from connexion import Connexion
 
@@ -41,6 +43,8 @@ class Main:
         # Appeler la méthode setup_gui pour afficher le formulaire de connexion
         connexion.create_gui()
 
+    def show_main(self):
+        self.root.deiconify()
 
 if __name__ == "__main__":
     main = Main()

@@ -75,6 +75,10 @@ class Tchat(Connexion):
         button_emojis.configure(bg='#2d243f', width=25, height=25)
 
         self.root.mainloop()
+        #self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def on_close(self):
+        self.root.destroy()
 
     def update_label(self, event):
         message = self.chat_entry.get()

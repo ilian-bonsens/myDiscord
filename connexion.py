@@ -20,6 +20,7 @@ class Connexion:
 
         # Vérifier si l'utilisateur existe
         if self.check_user(identifiant, password):
+            self.root.withdraw()
             # Importer le contenu de tchat.py
             from tchat import Tchat
             # Créer une instance de la classe tchat
