@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk  # Importer PIL pour gérer les images
 import pyaudio
 import wave
 import base64
@@ -16,6 +17,7 @@ class Vocal:
         
         self.init_db()
         self.create_ui()
+        self.set_background()  # Appeler la méthode pour définir le fond d'écran
 
     def init_db(self):
         self.conn = mysql.connector.connect(
@@ -77,6 +79,23 @@ class Vocal:
         
         stop_btn = tk.Button(frame, text="Arrêter l'enregistrement", command=self.stop_recording)
         stop_btn.pack(side=tk.RIGHT, padx=5)
+        
+    def set_background(self):
+        # Définir les dimensions de la fenêtre
+        self.root.geometry("450x250")  # Largeur x Hauteur
+
+        # Charger et adapter l'image de fond
+        background_image = Image.open("images/vocal.png")
+        # Utiliser Image.Resampling.LANCZOS pour le redimensionnement
+        background_image = background_image.resize((450, 250), Image.Resampling.LANCZOS)  # Adapter l'image à la taille de la fenêtre
+        background_photo = ImageTk.PhotoImage(background_image)
+
+        # Créer un Canvas pour l'image de fond
+        background_canvas = tk.Canvas(self.root, width=450, height=250)
+        background_canvas.pack(fill="both", expand=True)
+        # Placer l'image dans le Canvas
+        background_canvas.create_image(0, 0, image=background_photo, anchor="nw")
+        background_canvas.background_photo = background_photo  # Garder une référence
 
 if __name__ == "__main__":
     root = tk.Tk()
