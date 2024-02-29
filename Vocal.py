@@ -67,6 +67,7 @@ class Vocal:
             self.conn.commit()
             # Affiche un message dans le terminal au lieu d'utiliser une messagebox
             print("Vocal enregistré dans la base de données.")
+            self.root.destroy() # Ferme la fenêtre après l'enregistrement
         except mysql.connector.Error as e:
             print(e)
             # Vous pouvez également utiliser print pour signaler des erreurs
