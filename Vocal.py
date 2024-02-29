@@ -7,7 +7,7 @@ import mysql.connector
 import io
 from datetime import datetime
 
-class AudioRecorder:
+class Vocal:
     def __init__(self, root):
         self.root = root
         self.stream = None
@@ -81,5 +81,5 @@ class AudioRecorder:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Enregistreur Audio")
-    app = AudioRecorder(root)
+    app = Vocal(root)
     root.mainloop()
