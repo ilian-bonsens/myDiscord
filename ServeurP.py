@@ -6,9 +6,9 @@ import customtkinter as ctk
 class ServeurP:
     def __init__(self):
         self.root = tk.Toplevel()
-        self.create_gui() 
+        self.create_Serveur() 
 
-    def create_gui(self):
+    def create_Serveur(self):
         if self.root is None:
             self.root = tk.Toplevel()
         self.root.title("Discord IML")
@@ -38,12 +38,10 @@ class ServeurP:
         # Ajouter le bouton "Continuer"
         self.continue_button = tk.Button(self.root, text="Continuer", padx=20, pady=10, bg='#9489ae', fg='#2d243f', font=("Gill Sans MT", 8), command=self.open_chat)
         self.continue_button.place(x=270, y=260)  # Vous pouvez changer la position ici
+        self.root.mainloop()
 
     def open_chat(self):
         os.system('python3 tchat.py')
 
-# Instancier la classe ServeurP
-app = ServeurP()
-
-# Démarrer l'interface utilisateur
-tk.mainloop()
+if __name__ == "__main__":
+    app = ServeurP()

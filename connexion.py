@@ -1,11 +1,13 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
-import mysql.connector, hashlib, os
+import mysql.connector, hashlib
 
 class Connexion:
+    prenom = None  # Définir prenom comme une variable de classe
+
     def __init__(self):
-        self.root = tk.Toplevel()
+        self.root = tk.Tk()
         self.create_gui()
 
     def clear_entry(self, event, entry):
@@ -18,12 +20,11 @@ class Connexion:
 
         # Vérifier si l'utilisateur existe
         if self.check_user(identifiant, password):
+            self.root.destroy()
             # Importer le contenu de tchat.py
             from tchat import Tchat
-
             # Créer une instance de la classe tchat
             tchat = Tchat()
-
             # Appeler la méthode create_gui pour afficher la page d'accueil
             tchat.create_gui()
         else:
@@ -37,6 +38,7 @@ class Connexion:
             entry.configure(show='*')
 
     def inscription(self, event):
+        self.root.destroy()
         # Importer la classe Inscription du fichier inscription.py
         from inscription import Inscription
 
@@ -50,18 +52,20 @@ class Connexion:
         try:
             conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
             cursor = conn.cursor()
-            query = "SELECT mot_de_passe, sel FROM utilisateurs WHERE mail = %s"
+            query = "SELECT prenom, mot_de_passe, sel FROM utilisateurs WHERE mail = %s"
             cursor.execute(query, (mail,))
             result = cursor.fetchone() # Récupère la première ligne de résultat
             if result is None:
                 print("Mail incorrect")
                 return False  # Retourne False si aucun utilisateur trouvé
             else:
-                stored_password, sel = result
+                self.prenom, stored_password, sel = result
+                Connexion.prenom = self.prenom  # Mettre à jour la variable de classe
                 # Hash the user's password with the stored salt
                 hashed_password = hashlib.sha384((password + sel).encode()).hexdigest()
                 if hashed_password == stored_password:
                     print("Connexion réussie")
+                    print(f"Bienvenue {Connexion.prenom}")
                     return True  # Retourne True si l'utilisateur est trouvé
                 else:
                     print("Mot de passe incorrect")
@@ -76,7 +80,7 @@ class Connexion:
 
     def create_gui(self):
         if self.root is None:
-            self.root = tk.Toplevel()
+            self.root = tk.Tk()
         self.root.title("Discord IML")
         self.root.geometry("1280x720")
         self.root.configure(bg='black')

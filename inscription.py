@@ -6,7 +6,7 @@ import hashlib, os
 
 class Inscription:
     def __init__(self):
-        self.root = tk.Toplevel()  # ligne remplacée
+        self.root = tk.Tk()  # ligne remplacée
         self.setup_gui()
 
     def clear_entry(self, event, entry):
@@ -96,6 +96,7 @@ class Inscription:
                 conn.close()
     
     def connexion(self):
+        self.root.destroy()
         # Importer la classe Connexion du fichier connexion.py
         from connexion import Connexion
 

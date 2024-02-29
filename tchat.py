@@ -1,17 +1,22 @@
-import os
 import tkinter as tk
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import datetime as dt
 import mysql.connector
+import emoji
+from connexion import Connexion
+from ServeurP import ServeurP
 
-class Tchat:
+class Tchat(Connexion, ServeurP):
     def __init__(self):
-        self.root = tk.Toplevel()
-        self.custom_font = ("Gill Sans MT", 13)
+        self.custom_font = ("Gill Sans MT", 16)
+        self.emoji_font = ("Segoe UI Emoji", 18)
         self.labels = []
+        super().__init__()  # Initialise la classe parente en premier
+        self.root = tk.Tk()
         self.y_position = 350
-        self.create_gui()
+        self.emoji_fenetre = None
+        self.create_gui()  # Crée l'interface utilisateur après l'initialisation de la classe parente
 
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
@@ -19,30 +24,25 @@ class Tchat:
     def create_gui(self):
         self.root.title("Discord IML")
         self.root.geometry("1280x720")
-
         # Charger l'image de fond
         image = Image.open("images/page3.png")
         button_image = Image.open("images/add.png")
-
         # Redimensionner l'image
         image = image.resize((1280, 720), Image.LANCZOS)
         button_image = button_image.resize((55, 55), Image.LANCZOS)
-
         # Convertir l'image PIL en image Tkinter
         bg_image = ImageTk.PhotoImage(image)
         tk_image = ImageTk.PhotoImage(button_image)
-
         # Créer un label pour afficher l'image de fond
         bg_label = tk.Label(self.root, image=bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-        # Créer un bouton avec l'image du bouton
+        # Créer un bouton avec l'image du bouton "Amis"
         button_friends = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
         button_friends.image = tk_image  # Gardez une référence à l'image
         button_friends.place(x=255, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_friends.configure(bg='#2d243f')
-
-        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.open_serveurP)
+        # Créer un bouton avec l'image du bouton "Groupes"
+        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.create_Serveur)
         button_groups.image = tk_image  # Gardez une référence à l'image
         button_groups.place(x=20, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_groups.configure(bg='#2d243f')
@@ -63,7 +63,17 @@ class Tchat:
 
         self.chat_entry.bind("<Return>", self.update_label)
 
+        # Créer un bouton pour des emojis
+        button_emojis = tk.Button(self.root, image=tk_image, command=self.insert_emoji, borderwidth=0, highlightthickness=0)
+        button_emojis.image = tk_image  # Gardez une référence à l'image
+        button_emojis.place(x=1128, y=570, anchor='nw')
+        button_emojis.configure(bg='#2d243f', width=25, height=25)
+
         self.root.mainloop()
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def on_close(self):
+        self.root.destroy()
 
     def update_label(self, event):
         message = self.chat_entry.get()
@@ -74,11 +84,31 @@ class Tchat:
             for label in self.labels:
                 label.pack(side='top')  # Ajoute le label au haut de l'affichage
             label = ctk.CTkLabel(self.interior_frame)  # Ajoutez le label à interior_frame
-            label.configure(font=self.custom_font, fg_color='black', text_color='#9489ae', wraplength=610, justify='left', text=f'{message} ({date_time})')
+            label.configure(font=self.custom_font, fg_color='black', text_color='#9489ae', wraplength=610, justify='left', text=f'{Connexion.prenom} : {message} ({date_time})')
             label.pack(anchor='w', padx=5, pady=5)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
             self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
+
+    def insert_emoji(self):
+        # Crée une nouvelle fenêtre
+        self.emoji_window = tk.Tk(self.root)
+        self.emoji_window.title("Choisir un emoji")
+        self.emoji_window.geometry("287x50")
+        
+        # Crée une liste d'emojis
+        emojis = ['\U0001F600', '\U0001F605', '\U0001F602', '\U0001F633', '\U0001F9D0', '\U0001F60D', '\U0001F972', '\U0001F910']
+
+        # Crée un bouton pour chaque emoji
+        for i, e in enumerate(emojis):
+            button = tk.Button(self.emoji_window, text=emoji.emojize(e), command=lambda e=e: self.on_emoji_click(e), height=1, width=2)
+            button['font'] = ("Segoe UI Emoji", 18)
+            button.grid(row=i//10, column=i%10)  # Arrange les boutons en une grille de 10x10
+
+    def on_emoji_click(self, e):
+        # Insère l'emoji dans le champ de texte
+        self.chat_entry.insert(tk.END, emoji.emojize(e))
+        self.chat_entry.configure(font=self.emoji_font)
 
     def message_database(self, message, date_time):
         # Enregistrement du message dans la base de données
@@ -94,10 +124,12 @@ class Tchat:
 
             contenu = message
             date_heure = date_time
-            utilisateur = "root"
+            utilisateur = Connexion.prenom
 
             # Insertion du message dans la base de données
             sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
+            if hasattr(self, 'prenom'): # Vérifie si l'attribut prenom existe
+                print(f'Nouveau message de {Connexion.prenom}')
             # Exécution de la requête
             mycursor.execute(sql, (utilisateur, date_heure, contenu))
             mydb.commit()
@@ -110,9 +142,6 @@ class Tchat:
                 mycursor.close()
             if mydb:
                 mydb.close()
-
-    def open_serveurP(self):
-        os.system('python3 ServeurP.py')
-
+        
 if __name__ == "__main__":
     app = Tchat()
