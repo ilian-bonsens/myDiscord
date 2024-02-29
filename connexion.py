@@ -7,7 +7,7 @@ class Connexion:
     prenom = None  # Définir prenom comme une variable de classe
 
     def __init__(self):
-        self.root = tk.Toplevel()
+        self.root = tk.Tk()
         self.create_gui()
 
     def clear_entry(self, event, entry):
@@ -20,7 +20,7 @@ class Connexion:
 
         # Vérifier si l'utilisateur existe
         if self.check_user(identifiant, password):
-            self.root.withdraw()
+            self.root.destroy()
             # Importer le contenu de tchat.py
             from tchat import Tchat
             # Créer une instance de la classe tchat
@@ -38,6 +38,7 @@ class Connexion:
             entry.configure(show='*')
 
     def inscription(self, event):
+        self.root.destroy()
         # Importer la classe Inscription du fichier inscription.py
         from inscription import Inscription
 
@@ -79,7 +80,7 @@ class Connexion:
 
     def create_gui(self):
         if self.root is None:
-            self.root = tk.Toplevel()
+            self.root = tk.Tk()
         self.root.title("Discord IML")
         self.root.geometry("1280x720")
         self.root.configure(bg='black')

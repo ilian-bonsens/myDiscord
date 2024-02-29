@@ -12,7 +12,7 @@ class Tchat(Connexion):
         self.emoji_font = ("Segoe UI Emoji", 18)
         self.labels = []
         super().__init__()  # Initialise la classe parente en premier
-        self.root = tk.Toplevel()
+        self.root = tk.Tk()
         self.y_position = 350
         self.emoji_fenetre = None
         self.create_gui()  # Crée l'interface utilisateur après l'initialisation de la classe parente
@@ -75,7 +75,7 @@ class Tchat(Connexion):
         button_emojis.configure(bg='#2d243f', width=25, height=25)
 
         self.root.mainloop()
-        #self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def on_close(self):
         self.root.destroy()
@@ -97,7 +97,7 @@ class Tchat(Connexion):
 
     def insert_emoji(self):
         # Crée une nouvelle fenêtre
-        self.emoji_window = tk.Toplevel(self.root)
+        self.emoji_window = tk.Tk(self.root)
         self.emoji_window.title("Choisir un emoji")
         self.emoji_window.geometry("287x50")
         
