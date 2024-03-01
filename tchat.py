@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import Toplevel
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import datetime as dt
@@ -6,6 +7,10 @@ import mysql.connector
 import emoji
 from connexion import Connexion
 import subprocess
+import os
+from tkinter import simpledialog
+from playsound import playsound #pip install playsound sinon ne fonctionne pas
+from Vocal1 import Vocal
 
 class Tchat(Connexion):
     def __init__(self):
@@ -89,8 +94,9 @@ class Tchat(Connexion):
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         
     def open_vocal(self):
-        # Ouvre vocal.py au-dessus de la fenêtre actuelle
-        subprocess.Popen(['python', 'Vocal.py'])  # Assurez-vous que le chemin vers vocal.py est correct
+        # Ouvre la fenêtre vocal directement sans utiliser subprocess
+        vocal_window = Toplevel(self.root)  # Crée une nouvelle fenêtre Toplevel
+        app_vocal = Vocal(vocal_window)
 
     def on_close(self):
         self.root.destroy()
