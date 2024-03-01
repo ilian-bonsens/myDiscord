@@ -23,6 +23,7 @@ class Tchat(Connexion):
 
     def create_gui(self):
         self.root.title("Discord IML")
+
         self.root.geometry("1280x720")
 
         # Charger l'image de fond
@@ -84,7 +85,9 @@ class Tchat(Connexion):
         message = self.chat_entry.get()
         now = dt.datetime.now()
         date_time = now.strftime('%Y-%m-%d %H:%M:%S')
-        if len(message) > 0:
+        if len(message) > 0 and message[0] == '@':
+            destinataire, message = message.split(' ', 1)
+            destinataire = destinataire[1:]  # Enlève le '@' du début
             self.chat_entry.delete(0, len(message))
             for label in self.labels:
                 label.pack(side='top')  # Ajoute le label au haut de l'affichage
@@ -93,11 +96,11 @@ class Tchat(Connexion):
             label.pack(anchor='w', padx=5, pady=5)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
-            self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
+            self.message_database(message, date_time, destinataire)  # Appel à la méthode pour enregistrer le message dans la base de données
 
     def insert_emoji(self):
         # Crée une nouvelle fenêtre
-        self.emoji_window = tk.Tk(self.root)
+        self.emoji_window = tk.Toplevel(self.root)
         self.emoji_window.title("Choisir un emoji")
         self.emoji_window.geometry("287x50")
         
@@ -115,7 +118,7 @@ class Tchat(Connexion):
         self.chat_entry.insert(tk.END, emoji.emojize(e))
         self.chat_entry.configure(font=self.emoji_font)
 
-    def message_database(self, message, date_time):
+    def message_database(self, message, date_time, destinataire):
         # Enregistrement du message dans la base de données
         try:
             mydb = mysql.connector.connect(
@@ -127,16 +130,24 @@ class Tchat(Connexion):
 
             mycursor = mydb.cursor()
 
+            # Vérifie si le destinataire existe dans la base de données
+            sql = "SELECT * FROM utilisateurs WHERE prenom = %s"
+            mycursor.execute(sql, (destinataire))
+            result = mycursor.fetchone()
+            if result is None:
+                print("Erreur : l'utilisateur n'existe pas.")
+                return
+
             contenu = message
             date_heure = date_time
             utilisateur = Connexion.prenom
 
             # Insertion du message dans la base de données
-            sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
+            sql = "INSERT INTO messages (utilisateur, date_heure, contenu, destinataire) VALUES (%s, %s, %s, %s)"
             if hasattr(self, 'prenom'): # Vérifie si l'attribut prenom existe
                 print(f'Nouveau message de {Connexion.prenom}')
             # Exécution de la requête
-            mycursor.execute(sql, (utilisateur, date_heure, contenu))
+            mycursor.execute(sql, (utilisateur, date_heure, contenu, destinataire))
             mydb.commit()
             
         # Gestion des erreurs

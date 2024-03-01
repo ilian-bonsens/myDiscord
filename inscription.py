@@ -68,7 +68,7 @@ class Inscription:
         eye_btn.place(x=727, y=y)
 
     def add_buttons(self):
-        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=lambda: [self.save_user_to_database(), self.connexion()], fg_color='#2d243f', text_color="#9489ae")
+        inscription_button = ctk.CTkButton(self.root, text="Continuer", command=lambda: [self.connexion() if self.save_user_to_database() else None], fg_color='#2d243f', text_color="#9489ae")
         inscription_button.place(x=640, y=620, anchor='center')
 
     def save_user_to_database(self):
@@ -77,6 +77,11 @@ class Inscription:
         prenom = self.entries["prenom"].get()
         email = self.entries["email"].get()
         password = self.entries["password"].get()
+
+        if not nom or not prenom or not email or not password:
+            print("Veuillez remplir tous les champs")
+            return False
+    
         salt = os.urandom(16)
         hashed_password = hashlib.sha384((password + salt.hex()).encode()).hexdigest()
 
@@ -88,8 +93,10 @@ class Inscription:
             cursor.execute(query, (nom, prenom, email, hashed_password, salt.hex()))
             conn.commit()
             print("Utilisateur ajouté avec succès")
+            return True
         except mysql.connector.Error as e:
             print(f"Erreur lors de l'insertion dans la base de données: {e}")
+            return False
         finally:
             if conn.is_connected():
                 cursor.close()
@@ -106,6 +113,5 @@ class Inscription:
         # Appeler la méthode setup_gui pour afficher le formulaire de connexion
         connexion.create_gui()        
     
-
 if __name__ == "__main__":
     app = Inscription()

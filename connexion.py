@@ -18,6 +18,11 @@ class Connexion:
         identifiant = self.identifiant_entry.get()
         password = self.mot_de_passe_entry.get()
 
+        # Vérifier si les champs ne sont pas vides
+        if not identifiant or not password:
+            print("Veuillez remplir tous les champs.")
+            return 
+
         # Vérifier si l'utilisateur existe
         if self.check_user(identifiant, password):
             self.root.destroy()
