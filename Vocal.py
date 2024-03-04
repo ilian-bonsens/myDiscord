@@ -66,6 +66,11 @@ class Vocal(Connexion):
 
         # Stocker dans la base de données
         self.save_to_db(audio_base64)
+        self.notify_tchat_update()  # Nouvelle méthode à définir
+        
+    def notify_tchat_update(self):
+        with open("audio_update_signal.txt", "w") as signal_file:
+        signal_file.write("update")
 
     def record_callback(self, in_data, frame_count, time_info, status):
         self.frames.append(in_data)

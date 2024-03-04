@@ -11,6 +11,7 @@ import os
 from tkinter import simpledialog
 from playsound import playsound #pip install playsound sinon ne fonctionne pas
 from Vocal1 import Vocal
+import base64
 
 class Tchat(Connexion):
     def __init__(self):
@@ -22,7 +23,36 @@ class Tchat(Connexion):
         self.y_position = 350
         self.emoji_fenetre = None
         self.create_gui()  # Crée l'interface utilisateur après l'initialisation de la classe parente
+        self.auto_refresh() # Commencez le rafraîchissement automatique dès le démarrage
+        
+    def refresh_messages(self):
+        for widget in self.interior_frame.winfo_children():
+            widget.destroy()
 
+        self.cursor.execute("SELECT utilisateur, contenu, date_heure, audio FROM messages ORDER BY date_heure DESC")
+        for utilisateur, contenu, date_heure, audio in self.cursor.fetchall():
+            if contenu:  # Si le message a du texte.
+                message = f"{utilisateur} : {contenu} ({date_heure})"
+                label = ctk.CTkLabel(self.interior_frame, text=message, wraplength=500)
+                label.pack()
+            elif audio:  # Si le message a de l'audio.
+                message = f"{utilisateur} a envoyé un message vocal ({date_heure})"
+                label = ctk.CTkLabel(self.interior_frame, text=message, wraplength=500)
+                label.pack()
+                # Créer un bouton pour jouer l'audio
+                play_button = tk.Button(label, text='▶️', command=lambda a=audio: self.play_audio(a))
+                play_button.pack(side='right')
+                
+    def play_audio(self, audio_base64):
+        try:
+            audio_bytes = base64.b64decode(audio_base64)
+            temp_audio_file = "temp_audio.wav"
+            with open(temp_audio_file, "wb") as audio_file:
+                audio_file.write(audio_bytes)
+            playsound(temp_audio_file)
+            os.remove(temp_audio_file)  # Nettoyer après lecture
+        except Exception as e:
+            print(f"Erreur lors de la lecture de l'audio : {e}")
 
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
@@ -92,6 +122,18 @@ class Tchat(Connexion):
 
         self.root.mainloop()
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+        
+        self.refresh_messages()  # Chargement initial des messages
+        
+    def auto_refresh(self):
+        try:
+            with open("audio_update_signal.txt", "r") as signal_file:
+                if signal_file.read() == "update":
+                    self.refresh_messages()
+                    os.remove("audio_update_signal.txt")  # Supprimer le fichier après la mise à jour
+        except FileNotFoundError:
+            pass  # Le fichier n'existe pas, pas de mise à jour nécessaire
+        self.root.after(3000, self.auto_refresh)
         
     def open_vocal(self):
         # Ouvre la fenêtre vocal directement sans utiliser subprocess
