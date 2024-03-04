@@ -127,12 +127,13 @@ class Tchat(Connexion):
                 database="Discord",
                 password="AscZdvEfb520.+SQL"
             )
+            print("Connecté à la base de données")  # Ajouté pour le débogage
 
             mycursor = mydb.cursor()
 
             # Vérifie si le destinataire existe dans la base de données
             sql = "SELECT * FROM utilisateurs WHERE prenom = %s"
-            mycursor.execute(sql, (destinataire))
+            mycursor.execute(sql, (destinataire,))
             result = mycursor.fetchone()
             if result is None:
                 print("Erreur : l'utilisateur n'existe pas.")
@@ -149,6 +150,7 @@ class Tchat(Connexion):
             # Exécution de la requête
             mycursor.execute(sql, (utilisateur, date_heure, contenu, destinataire))
             mydb.commit()
+            print("Message enregistré")  # Ajouté pour le débogage
             
         # Gestion des erreurs
         except mysql.connector.Error as err:
