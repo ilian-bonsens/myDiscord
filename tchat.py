@@ -95,9 +95,8 @@ class Tchat(Connexion):
         
     def open_vocal(self):
         # Ouvre la fenêtre vocal directement sans utiliser subprocess
-        vocal_window = Toplevel(self.root)  # Crée une nouvelle fenêtre Toplevel
-        app_vocal = Vocal(vocal_window)
-
+        self.app_vocal = Vocal()
+        
     def on_close(self):
         self.root.destroy()
 

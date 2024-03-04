@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import PhotoImage, Toplevel
+from tkinter import Toplevel
 from PIL import Image, ImageTk  # Importer PIL pour gérer les images
 import pyaudio
 import wave
@@ -10,22 +10,24 @@ from datetime import datetime
 from connexion import Connexion
 
 class Vocal(Connexion):
-    def __init__(self):
-        # Initialiser la classe parente Connexion, qui crée une fenêtre Tk
-        super().__init__()
-        # Masquer la fenêtre principale Tk créée par Connexion
-        self.root.withdraw()
+    def __init__(self, master=None):
+        # Call the constructor of Connexion
+        # It is assumed Connexion does not create a new window if master is provided.
+        super().__init__(master)
 
-        # Créer une nouvelle fenêtre Toplevel pour Vocal
-        self.vocal_window = Toplevel()
-        self.vocal_window.title("Enregistreur Vocal")
+        # Create a Toplevel window if Vocal is not provided with master
+        if master is None:
+            self.vocal_window = Toplevel()
+            self.vocal_window.title("Enregistreur Vocal")
+        else:
+            self.vocal_window = master
 
-        # Configuration spécifique à Vocal
+        self.vocal_window.protocol("WM_DELETE_WINDOW", self.on_close)  # Handle window close
+
         self.stream = None
         self.p = pyaudio.PyAudio()
         self.frames = []
 
-        # Initialiser la base de données et l'interface utilisateur
         self.init_db()
         self.set_background()
         self.create_ui()
