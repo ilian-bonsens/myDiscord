@@ -49,6 +49,7 @@ class Tchat(Connexion):
             temp_audio_file = "temp_audio.wav"
             with open(temp_audio_file, "wb") as audio_file:
                 audio_file.write(audio_bytes)
+            print(f"Playing audio from {temp_audio_file}")  # Debugging
             playsound(temp_audio_file)
             os.remove(temp_audio_file)  # Nettoyer après lecture
         except Exception as e:

@@ -46,49 +46,47 @@ class Vocal(Connexion):
         self.stream = self.p.open(format=pyaudio.paInt16, channels=2, rate=44100, input=True, frames_per_buffer=1024)
         self.stream.start_stream()
         print("Recording...")
+        self.start_recording_button['state'] = 'disabled'
+        self.stop_recording_button['state'] = 'normal'
 
     def stop_recording(self):
-        print("Stopped recording.")
-        self.stream.stop_stream()
-        self.stream.close()
-        self.stream = None
+        if self.stream is not None:
+            print("Stopped recording.")
+            self.stream.stop_stream()
+            self.stream.close()
+            self.stream = None
 
-        # Convertir les frames en base64
-        buffer = io.BytesIO()
-        wf = wave.open(buffer, 'wb')
-        wf.setnchannels(2)
-        wf.setsampwidth(self.p.get_sample_size(pyaudio.paInt16))
-        wf.setframerate(44100)
-        wf.writeframes(b''.join(self.frames))
-        wf.close()
+            buffer = io.BytesIO()
+            wf = wave.open(buffer, 'wb')
+            wf.setnchannels(2)
+            wf.setsampwidth(self.p.get_sample_size(pyaudio.paInt16))
+            wf.setframerate(44100)
+            wf.writeframes(b''.join(self.frames))
+            wf.close()
 
-        audio_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-        # Stocker dans la base de données
-        self.save_to_db(audio_base64)
-        self.notify_tchat_update()  # Nouvelle méthode à définir
+            audio_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            self.save_to_db(audio_base64)
+            self.notify_tchat_update()
+            self.start_recording_button['state'] = 'normal'
+            self.stop_recording_button['state'] = 'disabled'
+        else:
+            print("Recording was not started.")
+            
+    def save_to_db(self, audio_base64):
+        now = datetime.now()
+        formatted_now = now.strftime('%Y-%m-%d %H:%M:%S')
+        utilisateur = self.prenom
+        query = "INSERT INTO messages (utilisateur, audio, date_heure) VALUES (%s, %s, %s)"
+        self.cursor.execute(query, (utilisateur, audio_base64, formatted_now))
+        self.conn.commit()
+        print("Vocal enregistré dans la base de données.")
         
     def notify_tchat_update(self):
-        with open("audio_update_signal.txt", "w") as signal_file:
-        signal_file.write("update")
+        print("Audio enregistré, veuillez actualiser tchat.py manuellement.")
 
     def record_callback(self, in_data, frame_count, time_info, status):
         self.frames.append(in_data)
         return (in_data, pyaudio.paContinue)
-
-    def save_to_db(self, audio_base64):
-        now = datetime.now()
-        formatted_now = now.strftime('%Y-%m-%d %H:%M:%S')
-        utilisateur = self.prenom  # Utilisation de self.prenom hérité de Connexion
-        try:
-            # Modification de la requête pour inclure l'utilisateur
-            query = "INSERT INTO messages (utilisateur, audio, date_heure) VALUES (%s, %s, %s)"
-            self.cursor.execute(query, (utilisateur, audio_base64, formatted_now))
-            self.conn.commit()
-            print("Vocal enregistré dans la base de données.")
-        except mysql.connector.Error as e:
-            print(e)
-            print("Erreur lors de la sauvegarde de l'enregistrement.")
 
     def create_ui(self):
     # Calculer le positionnement pour centrer les boutons
@@ -154,7 +152,11 @@ class Vocal(Connexion):
         self.canvas.create_image(0, 0, image=background_photo, anchor="nw")
         self.canvas.background_photo = background_photo  # Garder une référence
 
-    # ... Reste des méthodes de Vocal, si elles existent.
+    def on_close(self):
+        if self.stream:
+            self.stream.stop_stream()
+            self.stream.close()
+        self.vocal_window.destroy()
 
 # Vérification pour exécuter Vocal comme script principal
 if __name__ == "__main__":
