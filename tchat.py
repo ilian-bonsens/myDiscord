@@ -11,6 +11,7 @@ class Tchat(Connexion):
         self.custom_font = ("Gill Sans MT", 16)
         self.emoji_font = ("Segoe UI Emoji", 18)
         self.labels = []
+        self.ami = 0
         super().__init__()  # Initialise la classe parente en premier
         self.root = tk.Tk()
         self.y_position = 350
@@ -42,12 +43,13 @@ class Tchat(Connexion):
         bg_label = tk.Label(self.root, image=bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-        # Créer un bouton avec l'image du bouton
-        button_friends = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
+        # Créer un bouton pour les amis
+        button_friends = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.ajouter_ami)
         button_friends.image = tk_image  # Gardez une référence à l'image
         button_friends.place(x=255, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_friends.configure(bg='#2d243f')
 
+        # Créer un bouton pour les groupes
         button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
         button_groups.image = tk_image  # Gardez une référence à l'image
         button_groups.place(x=20, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
@@ -78,8 +80,57 @@ class Tchat(Connexion):
         self.root.mainloop()
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
-    def on_close(self):
-        self.root.destroy()
+    def ajouter_ami(self):
+        # Crée une nouvelle fenêtre
+        self.ami_window = tk.Toplevel(self.root)
+        self.ami_window.title("Ajouter un ami")
+        self.ami_window.geometry("500x250")
+        self.ami_window.configure(bg='#2d243f')
+        self.ami_window.label = ctk.CTkLabel(self.ami_window, text="Ajouter un ami", font=("Gill Sans MT", 40), text_color='#9489ae')
+        self.ami_window.label.place(x=250, y=70, anchor='center')  # Coordonnées x et y du texte
+        self.ami_window.entry = ctk.CTkEntry(self.ami_window, width=250, height=35, placeholder_text="Entrez le prenom de l'ami à ajouter")
+        self.ami_window.entry.place(x=250, y=150, anchor='center') # Coordonnées x et y du champ de saisie
+
+        # Dictionnaire associant les noms d'amis à des chemins d'images
+        ami_image_paths = {
+            'Marion': 'images/icone_m.png',
+            'Lucas': 'images/icone_l.png',
+            'Ilian': 'images/icone_i.png',
+        }
+
+        def on_return(event):
+            ami = self.ami_window.entry.get() 
+            mydb = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    database="Discord",
+                    password="AscZdvEfb520.+SQL"
+                )
+            print("Connecté à la base de données")  # Ajouté pour le débogage
+
+            mycursor = mydb.cursor()
+
+            # Vérifie si le destinataire existe dans la base de données
+            sql = "SELECT * FROM utilisateurs WHERE prenom = %s"
+            mycursor.execute(sql, (ami,))
+            result = mycursor.fetchone()
+            if result is None:
+                print("Erreur : l'utilisateur n'existe pas.")
+            else:
+                print("Utilisateur ajouté.")
+                self.ami += 1
+                self.ami_window.destroy()
+                # Créer un bouton pour l'ami ajouté
+                path = ami_image_paths.get(ami, 'images/add.png')
+                button_image = Image.open(path)
+                button_image = button_image.resize((55, 55), Image.LANCZOS)
+                tk_image = ImageTk.PhotoImage(button_image)
+                button_friends = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
+                button_friends.image = tk_image  # Gardez une référence à l'image
+                button_friends.place(x=255, y=140 + 70 * self.ami, anchor='nw')  # Modifiez les coordonnées x et y en fonction du nombre d'amis
+                button_friends.configure(bg='#2d243f')
+
+        self.ami_window.entry.bind("<Return>", on_return)
 
     def update_label(self, event):
         message = self.chat_entry.get()
@@ -97,6 +148,9 @@ class Tchat(Connexion):
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
             self.message_database(message, date_time, destinataire)  # Appel à la méthode pour enregistrer le message dans la base de données
+
+    def on_close(self):
+        self.root.destroy()
 
     def insert_emoji(self):
         # Crée une nouvelle fenêtre

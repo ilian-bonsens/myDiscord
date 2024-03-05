@@ -21,7 +21,7 @@ class Connexion:
         # Vérifier si les champs ne sont pas vides
         if not identifiant or not password:
             print("Veuillez remplir tous les champs.")
-            return 
+            return
 
         # Vérifier si l'utilisateur existe
         if self.check_user(identifiant, password):
