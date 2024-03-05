@@ -1,9 +1,9 @@
 import tkinter as tk
 import customtkinter as ctk
-from PIL import Image, ImageTk
 import datetime as dt
 import mysql.connector
 import emoji
+from PIL import Image, ImageTk
 from connexion import Connexion
 
 class Tchat(Connexion):
@@ -18,7 +18,6 @@ class Tchat(Connexion):
         self.emoji_fenetre = None
         self.create_gui()  # Crée l'interface utilisateur après l'initialisation de la classe parente
 
-
     def clear_entry(self, event, entry):
         entry.delete(0, tk.END)
 
@@ -30,14 +29,17 @@ class Tchat(Connexion):
         # Charger l'image de fond
         image = Image.open("images/page3.png")
         button_image = Image.open("images/add.png")
+        deco_image = Image.open("images/deconnexion.png")
 
         # Redimensionner l'image
         image = image.resize((1280, 720), Image.LANCZOS)
         button_image = button_image.resize((55, 55), Image.LANCZOS)
+        deco_image = deco_image.resize((45, 45), Image.LANCZOS)
 
         # Convertir l'image PIL en image Tkinter
         bg_image = ImageTk.PhotoImage(image)
         tk_image = ImageTk.PhotoImage(button_image)
+        deco_image = ImageTk.PhotoImage(deco_image)
 
         # Créer un label pour afficher l'image de fond
         bg_label = tk.Label(self.root, image=bg_image)
@@ -76,6 +78,12 @@ class Tchat(Connexion):
         button_emojis.image = tk_image  # Gardez une référence à l'image
         button_emojis.place(x=1128, y=570, anchor='nw')
         button_emojis.configure(bg='#2d243f', width=25, height=25)
+
+        # Créer un bouton deconnexion
+        button_deco = tk.Button(self.root, image=deco_image, command=self.deconnexion, borderwidth=0, highlightthickness=0)
+        button_deco.image = deco_image  # Gardez une référence à l'image
+        button_deco.place(x=1210, y=660, anchor='nw')
+        button_deco.configure(bg='#2d243f', width=45, height=45)
 
         self.root.mainloop()
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -128,7 +136,7 @@ class Tchat(Connexion):
                 button_friends = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
                 button_friends.image = tk_image  # Gardez une référence à l'image
                 button_friends.place(x=255, y=140 + 70 * self.ami, anchor='nw')  # Modifiez les coordonnées x et y en fonction du nombre d'amis
-                button_friends.configure(bg='#2d243f')
+                button_friends.configure(bg='#2d243f', width=55, height=55)
 
         self.ami_window.entry.bind("<Return>", on_return)
 
@@ -214,6 +222,17 @@ class Tchat(Connexion):
                 mycursor.close()
             if mydb:
                 mydb.close()
-        
+
+    def deconnexion(self):
+        self.root.destroy()
+        # Importer la classe Connexion du fichier connexion.py
+        from connexion import Connexion
+
+        # Créer une instance de la classe Connexion
+        connexion = Connexion()
+
+        # Appeler la méthode setup_gui pour afficher le formulaire de connexion
+        connexion.create_gui() 
+
 if __name__ == "__main__":
     app = Tchat()
