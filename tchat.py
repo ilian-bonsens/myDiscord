@@ -79,6 +79,16 @@ class Tchat(Connexion):
         button_emojis.place(x=1128, y=570, anchor='nw')
         button_emojis.configure(bg='#2d243f', width=25, height=25)
 
+        # Charger et redimensionner l'image du téléphone
+        phone_image = Image.open("images/telephone.png")  # Assurez-vous que le chemin est correct
+        phone_image = phone_image.resize((30, 30), Image.Resampling.LANCZOS)  # Redimensionner selon vos besoins
+        phone_photo = ImageTk.PhotoImage(phone_image)
+
+        # Créer le bouton du téléphone en bas à droite
+        phone_button = tk.Button(self.root, image=phone_photo, bg='black', borderwidth=0, highlightthickness=0)
+        phone_button.image = phone_photo  # Gardez une référence
+        phone_button.place(relx=1.0, rely=1.0, anchor='se', x=-65, y=-123) # Ajustez selon vos besoins
+
         # Créer un bouton deconnexion
         button_deco = tk.Button(self.root, image=deco_image, command=self.deconnexion, borderwidth=0, highlightthickness=0)
         button_deco.image = deco_image  # Gardez une référence à l'image
