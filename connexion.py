@@ -50,7 +50,7 @@ class Connexion:
 
     def check_user(self, mail, password):
         try:
-            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='AscZdvEfb520.+SQL')
+            conn = mysql.connector.connect(host='localhost', database='Discord', user='root', password='azerty1234')
             cursor = conn.cursor()
             query = "SELECT prenom, mot_de_passe, sel FROM utilisateurs WHERE mail = %s"
             cursor.execute(query, (mail,))

@@ -24,23 +24,29 @@ class Tchat(Connexion, ServeurP):
     def create_gui(self):
         self.root.title("Discord IML")
         self.root.geometry("1280x720")
+        
         # Charger l'image de fond
         image = Image.open("images/page3.png")
         button_image = Image.open("images/add.png")
+        
         # Redimensionner l'image
         image = image.resize((1280, 720), Image.LANCZOS)
         button_image = button_image.resize((55, 55), Image.LANCZOS)
+        
         # Convertir l'image PIL en image Tkinter
         bg_image = ImageTk.PhotoImage(image)
         tk_image = ImageTk.PhotoImage(button_image)
+        
         # Créer un label pour afficher l'image de fond
         bg_label = tk.Label(self.root, image=bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+        
         # Créer un bouton avec l'image du bouton "Amis"
         button_friends = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
         button_friends.image = tk_image  # Gardez une référence à l'image
         button_friends.place(x=255, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_friends.configure(bg='#2d243f')
+        
         # Créer un bouton avec l'image du bouton "Groupes"
         button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.create_Serveur)
         button_groups.image = tk_image  # Gardez une référence à l'image
@@ -117,7 +123,7 @@ class Tchat(Connexion, ServeurP):
                 host="localhost",
                 user="root",
                 database="Discord",
-                password="AscZdvEfb520.+SQL"
+                password="azerty1234"
             )
 
             mycursor = mydb.cursor()
