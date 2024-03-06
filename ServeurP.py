@@ -12,7 +12,7 @@ class ServeurP:
         self.custom_font = ("Gill Sans MT", 16)
         self.emoji_font = ("Segoe UI Emoji", 18)
         self.labels = []
-        self.root = tk.Toplevel()
+        self.root = tk.Tk()
         self.y_position = 350
         self.emoji_fenetre = None
         self.create_Serveur()
@@ -104,7 +104,7 @@ class ServeurP:
 
     def insert_emoji(self):
         # Crée une nouvelle fenêtre
-        self.emoji_window = tk.Toplevel(self.root)
+        self.emoji_window = tk.Tk(self.root)
         self.emoji_window.title("Choisir un emoji")
         self.emoji_window.geometry("287x50")
         
@@ -140,12 +140,14 @@ class ServeurP:
 
             # Insertion du message dans la base de données
             sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
-            if hasattr(self, 'prenom'): # Vérifie si l'attribut prenom existe
-                print(f'Nouveau message de {Connexion.prenom}')
+            val = (utilisateur, date_heure, contenu)
+
             # Exécution de la requête
-            mycursor.execute(sql, (utilisateur, date_heure, contenu))
+            mycursor.execute(sql, val)
             mydb.commit()
             
+            print(f'Nouveau message de {utilisateur} enregistré dans la base de données')
+
         # Gestion des erreurs
         except mysql.connector.Error as err:
             print("Une erreur MySQL s'est produite :", err)

@@ -7,7 +7,7 @@ import emoji
 from connexion import Connexion
 from ServeurP import ServeurP
 
-class Tchat(Connexion, ServeurP):
+class Tchat(Connexion):
     def __init__(self):
         self.custom_font = ("Gill Sans MT", 16)
         self.emoji_font = ("Segoe UI Emoji", 18)
@@ -48,7 +48,7 @@ class Tchat(Connexion, ServeurP):
         button_friends.configure(bg='#2d243f')
         
         # Créer un bouton avec l'image du bouton "Groupes"
-        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.create_Serveur)
+        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.open_chat)
         button_groups.image = tk_image  # Gardez une référence à l'image
         button_groups.place(x=20, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_groups.configure(bg='#2d243f')
@@ -134,12 +134,14 @@ class Tchat(Connexion, ServeurP):
 
             # Insertion du message dans la base de données
             sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
-            if hasattr(self, 'prenom'): # Vérifie si l'attribut prenom existe
-                print(f'Nouveau message de {Connexion.prenom}')
+            val = (utilisateur, date_heure, contenu)
+
             # Exécution de la requête
-            mycursor.execute(sql, (utilisateur, date_heure, contenu))
+            mycursor.execute(sql, val)
             mydb.commit()
             
+            print(f'Nouveau message de {utilisateur} enregistré dans la base de données')
+
         # Gestion des erreurs
         except mysql.connector.Error as err:
             print("Une erreur MySQL s'est produite :", err)
@@ -148,6 +150,10 @@ class Tchat(Connexion, ServeurP):
                 mycursor.close()
             if mydb:
                 mydb.close()
-        
+
+    def open_chat(self):
+        self.root.destroy()
+        self.serveurP = ServeurP()  # Crée une nouvelle instance de ServeurP
+
 if __name__ == "__main__":
     app = Tchat()
