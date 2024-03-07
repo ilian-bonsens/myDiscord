@@ -23,7 +23,6 @@ class Tchat(Connexion):
 
     def create_gui(self):
         self.root.title("Discord IML")
-
         self.root.geometry("1280x720")
 
         # Charger l'image de fond
@@ -37,12 +36,12 @@ class Tchat(Connexion):
         deco_image = deco_image.resize((45, 45), Image.LANCZOS)
 
         # Convertir l'image PIL en image Tkinter
-        bg_image = ImageTk.PhotoImage(image)
+        self.bg_image = ImageTk.PhotoImage(image)
         tk_image = ImageTk.PhotoImage(button_image)
         deco_image = ImageTk.PhotoImage(deco_image)
 
         # Créer un label pour afficher l'image de fond
-        bg_label = tk.Label(self.root, image=bg_image)
+        bg_label = tk.Label(self.root, image=self.bg_image)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Créer un bouton pour les amis
