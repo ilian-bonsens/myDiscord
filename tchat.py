@@ -6,6 +6,7 @@ import mysql.connector
 import emoji
 from connexion import Connexion
 from ServeurP import ServeurP
+from plyer import notification  # Ajout de l'importation de plyer
 
 class Tchat(Connexion):
     def __init__(self):
@@ -95,6 +96,13 @@ class Tchat(Connexion):
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
             self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
+
+            # Ajoutez une notification
+            notification.notify(
+                title='Nouveau message',
+                message=f'{Connexion.prenom} a envoyé un message',
+                timeout=10
+            )
 
     def insert_emoji(self):
         # Crée une nouvelle fenêtre

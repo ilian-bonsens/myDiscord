@@ -6,6 +6,7 @@ import datetime as dt
 import mysql.connector
 from connexion import Connexion
 import emoji
+from plyer import notification  # Ajout de l'importation de plyer
 
 class ServeurP:
     def __init__(self):
@@ -26,7 +27,7 @@ class ServeurP:
         self.root.configure(bg='black')
 
         # Charger l'image de fond
-        image = Image.open("images/page3.png")
+        image = Image.open("images/page7.png")
         image = image.resize((1280, 720), Image.LANCZOS)
         self.bg_image = ImageTk.PhotoImage(image)
 
@@ -56,7 +57,7 @@ class ServeurP:
         self.root.mainloop()
 
         # Charger l'image de fond
-        image = Image.open("images/page3.png")
+        image = Image.open("images/page7.png")
         button_image = Image.open("images/add.png")
         
         # Redimensionner l'image
@@ -101,6 +102,13 @@ class ServeurP:
             self.labels.append(label)
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
             self.message_database(message, date_time)  # Appel à la méthode pour enregistrer le message dans la base de données
+
+            # Ajoutez une notification
+            notification.notify(
+                title='Nouveau message',
+                message=f'{Connexion.prenom} a envoyé un message',
+                timeout=10
+            )
 
     def insert_emoji(self):
         # Crée une nouvelle fenêtre
