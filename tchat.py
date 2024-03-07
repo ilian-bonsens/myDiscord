@@ -5,6 +5,7 @@ import mysql.connector
 import emoji
 from PIL import Image, ImageTk
 from connexion import Connexion
+from vocal import Vocal
 
 class Tchat(Connexion):
     def __init__(self):
@@ -84,7 +85,7 @@ class Tchat(Connexion):
         phone_photo = ImageTk.PhotoImage(phone_image)
 
         # Créer le bouton du téléphone en bas à droite
-        phone_button = tk.Button(self.root, image=phone_photo, bg='black', borderwidth=0, highlightthickness=0)
+        phone_button = tk.Button(self.root, image=phone_photo, command=self.open_vocal, bg='black', borderwidth=0, highlightthickness=0)
         phone_button.image = phone_photo  # Gardez une référence
         phone_button.place(relx=1.0, rely=1.0, anchor='se', x=-65, y=-123) # Ajustez selon vos besoins
 
@@ -180,7 +181,7 @@ class Tchat(Connexion):
 
         # Crée un bouton pour chaque emoji
         for i, e in enumerate(emojis):
-            button = tk.Button(self.emoji_window, text=emoji.emojize(e), command=lambda e=e: self.on_emoji_click(e), height=1, width=2)
+            button = tk.Button(self.emoji_window, text=emoji.emojize(e), command=lambda e=e: self.on_emoji_click(e), height=1, width=2, bg='#2d243f', fg='#9489ae')
             button['font'] = ("Segoe UI Emoji", 18)
             button.grid(row=i//10, column=i%10)  # Arrange les boutons en une grille de 10x10
 
@@ -231,6 +232,10 @@ class Tchat(Connexion):
                 mycursor.close()
             if mydb:
                 mydb.close()
+
+    def open_vocal(self):
+        # Ouvre la fenêtre vocal directement sans utiliser subprocess
+        self.app_vocal = Vocal()
 
     def deconnexion(self):
         self.root.destroy()
