@@ -45,6 +45,16 @@ class ServeurP:
         self.interior_frame.configure(width=660, height=390, fg_color='black', corner_radius=0)
         self.interior_frame.place(x=80, y=10, anchor='nw')
 
+        # Récupérer les messages de la base de données
+        messages = self.get_messages()
+
+        # Afficher chaque message
+        for utilisateur, date_heure, contenu in messages:
+            label = ctk.CTkLabel(self.interior_frame)  # Ajoutez le label à interior_frame
+            label.configure(font=self.custom_font, fg_color='black', text_color='#9489ae', wraplength=610, justify='left', text=f'{utilisateur} : {contenu} ({date_heure})')
+            label.pack(anchor='w', padx=5, pady=5)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
+            self.labels.append(label)
+
         self.Serveur_entry = ctk.CTkEntry(self.root, width=610, height=35)
         self.Serveur_entry.place(x=550, y=565, anchor='nw')
         self.Serveur_entry.configure(font=self.custom_font, fg_color='grey30', text_color='white', corner_radius=0, placeholder_text='Envoyer un message à @')
@@ -67,8 +77,6 @@ class ServeurP:
          # Convertir l'image PIL en image Tkinter
         bg_image = ImageTk.PhotoImage(image)
         tk_image = ImageTk.PhotoImage(button_image)
-
-        
 
         # Créer un bouton pour des emojis
         button_emojis = tk.Button(self.root, image=tk_image, command=self.insert_emoji, borderwidth=0, highlightthickness=0)
@@ -155,6 +163,36 @@ class ServeurP:
             mydb.commit()
             
             print(f'Nouveau message de {utilisateur} enregistré dans la base de données')
+
+        # Gestion des erreurs
+        except mysql.connector.Error as err:
+            print("Une erreur MySQL s'est produite :", err)
+        finally:
+            if mycursor:
+                mycursor.close()
+            if mydb:
+                mydb.close()
+
+    def get_messages(self):
+        # Récupération des messages de la base de données
+        try:
+            mydb = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                database="Discord",
+                password="azerty1234"
+            )
+
+            mycursor = mydb.cursor()
+
+            # Sélection des messages de la base de données
+            sql = "SELECT utilisateur, date_heure, contenu FROM messages ORDER BY date_heure ASC"
+            mycursor.execute(sql)
+
+            # Récupération des résultats
+            messages = mycursor.fetchall()
+            
+            return messages
 
         # Gestion des erreurs
         except mysql.connector.Error as err:
