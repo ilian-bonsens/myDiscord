@@ -45,11 +45,11 @@ class ServeurP:
         self.interior_frame.configure(width=660, height=390, fg_color='black', corner_radius=0)
         self.interior_frame.place(x=80, y=10, anchor='nw')
 
-        # Récupérer les messages de la base de données
-        messages = self.get_messages()
+        # Récupérer les messages serveurs de la base de données
+        serveurs = self.get_serveurs()
 
         # Afficher chaque message
-        for utilisateur, date_heure, contenu in messages:
+        for utilisateur, date_heure, contenu in serveurs:
             label = ctk.CTkLabel(self.interior_frame)  # Ajoutez le label à interior_frame
             label.configure(font=self.custom_font, fg_color='black', text_color='#9489ae', wraplength=610, justify='left', text=f'{utilisateur} : {contenu} ({date_heure})')
             label.pack(anchor='w', padx=5, pady=5)  # Ajoute le nouveau label à gauche avec un padding de 10 pixels
@@ -155,7 +155,7 @@ class ServeurP:
             utilisateur = Connexion.prenom
 
             # Insertion du message dans la base de données
-            sql = "INSERT INTO messages (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
+            sql = "INSERT INTO serveurs (utilisateur, date_heure, contenu) VALUES (%s, %s, %s)"
             val = (utilisateur, date_heure, contenu)
 
             # Exécution de la requête
@@ -173,8 +173,8 @@ class ServeurP:
             if mydb:
                 mydb.close()
 
-    def get_messages(self):
-        # Récupération des messages de la base de données
+    def get_serveurs(self):
+        # Récupération des messages serveurs de la base de données
         try:
             mydb = mysql.connector.connect(
                 host="localhost",
@@ -185,14 +185,14 @@ class ServeurP:
 
             mycursor = mydb.cursor()
 
-            # Sélection des messages de la base de données
-            sql = "SELECT utilisateur, date_heure, contenu FROM messages ORDER BY date_heure ASC"
+            # Sélection des messages serveurs de la base de données
+            sql = "SELECT utilisateur, date_heure, contenu FROM serveurs ORDER BY date_heure ASC"
             mycursor.execute(sql)
 
             # Récupération des résultats
-            messages = mycursor.fetchall()
+            serveurs = mycursor.fetchall()
             
-            return messages
+            return serveurs
 
         # Gestion des erreurs
         except mysql.connector.Error as err:
