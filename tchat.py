@@ -1,11 +1,13 @@
 import tkinter as tk
 import customtkinter as ctk
+from PIL import Image, ImageTk
 import datetime as dt
 import mysql.connector
 import emoji
-from PIL import Image, ImageTk
 from connexion import Connexion
+from ServeurP import ServeurP
 from vocal import Vocal
+from plyer import notification
 
 class Tchat(Connexion):
     def __init__(self):
@@ -52,7 +54,7 @@ class Tchat(Connexion):
         button_friends.configure(bg='#2d243f')
 
         # Créer un bouton pour les groupes
-        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0)
+        button_groups = tk.Button(self.root, image=tk_image, borderwidth=0, highlightthickness=0, command=self.open_chat)
         button_groups.image = tk_image  # Gardez une référence à l'image
         button_groups.place(x=20, y=140, anchor='nw')  # Modifiez les coordonnées x et y si nécessaire
         button_groups.configure(bg='#2d243f')
@@ -167,6 +169,13 @@ class Tchat(Connexion):
             self.root.update_idletasks()  # Mettez à jour l'interface utilisateur
             self.message_database(message, date_time, destinataire)  # Appel à la méthode pour enregistrer le message dans la base de données
 
+            # Ajoutez une notification
+            notification.notify(
+                title='Nouveau message',
+                message=f'{Connexion.prenom} a envoyé un message',
+                timeout=10
+            )
+
     def on_close(self):
         self.root.destroy()
 
@@ -234,8 +243,12 @@ class Tchat(Connexion):
                 mydb.close()
 
     def open_vocal(self):
-        # Ouvre la fenêtre vocal directement sans utiliser subprocess
-        self.app_vocal = Vocal()
+        vocal_window = tk.Toplevel(self.root)
+        Vocal(vocal_window)
+
+    def open_chat(self):
+        self.root.destroy()
+        self.serveurP = ServeurP()  # Crée une nouvelle instance de ServeurP
 
     def deconnexion(self):
         self.root.destroy()
